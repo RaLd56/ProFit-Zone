@@ -1,0 +1,192 @@
+{% extends 'main/layout.html' %}
+{% load static %}
+
+{% block title %}
+Турники
+{% endblock %}
+
+{% block content %}
+<section class="product-section">
+    <div class="container">
+        <h1>Турники</h1>
+        <div class="product-layout">
+            <!-- Фильтры -->
+            <aside class="filters">
+
+                <h3>Сортировка</h3>
+                <select name="sort_by" id="sortSelect">
+                    <option value="popularity" {% if sort_by == 'popularity' %}selected{% endif %}>Популярности</option>
+                    <option value="price" {% if sort_by == 'price' %}selected{% endif %}>Цене</option>
+                </select>
+
+                <h3>Цена</h3>
+                <div class="price-slider-container">
+                    <input type="range" id="minPriceRange" min="8990" max="24990" value="{{ request.GET.min_price|default:8990 }}" class="price-range" name="min_price">
+                    <input type="range" id="maxPriceRange" min="8990" max="24990" value="{{ request.GET.max_price|default:24990 }}" class="price-range" name="max_price">
+                </div>
+                <div class="price-range-display">
+                    <span id="priceMinDisplay">от {{ request.GET.min_price|default:8990 }}</span> - <span id="priceMaxDisplay">до {{ request.GET.max_price|default:24990 }}</span> ₽
+                </div>
+
+                <script>
+                const minPriceRange = document.getElementById('minPriceRange');
+                const maxPriceRange = document.getElementById('maxPriceRange');
+                const priceMinDisplay = document.getElementById('priceMinDisplay');
+                const priceMaxDisplay = document.getElementById('priceMaxDisplay');
+
+                // Функция для обновления отображаемых значений
+                function updatePriceDisplay() {
+                    const minValue = parseInt(minPriceRange.value);
+                    const maxValue = parseInt(maxPriceRange.value);
+                    priceMinDisplay.textContent = `от ${minValue}`;
+                    priceMaxDisplay.textContent = `до ${maxValue}`;
+                }
+
+                function handleMinPriceChange() {
+                    if (parseInt(minPriceRange.value) > parseInt(maxPriceRange.value)) {
+                        minPriceRange.value = maxPriceRange.value;
+                    }
+                    updatePriceDisplay();
+                }
+
+                function handleMaxPriceChange() {
+                    if (parseInt(maxPriceRange.value) < parseInt(minPriceRange.value)) {
+                        maxPriceRange.value = minPriceRange.value;
+                    }
+                    updatePriceDisplay();
+                }
+
+                minPriceRange.addEventListener('input', handleMinPriceChange);
+                maxPriceRange.addEventListener('input', handleMaxPriceChange);
+                updatePriceDisplay();
+                </script>
+
+                <style>
+                    .price-slider-container {
+                        position: relative;
+                        width: 100%;
+                        height: 40px;
+                        margin: 10px 0;
+                    }
+                    .price-range {
+                        -webkit-appearance: none;
+                        appearance: none;
+                        width: 100%;
+                        height: 5px;
+                        background: #007bff;
+                        position: absolute;
+                        pointer-events: none;
+                    }
+                    #minPriceRange { z-index: 3; }
+                    #maxPriceRange { z-index: 2; }
+                    .price-range::-webkit-slider-thumb {
+                        -webkit-appearance: none;
+                        appearance: none;
+                        width: 15px;
+                        height: 15px;
+                        background: #007bff;
+                        border-radius: 50%;
+                        cursor: pointer;
+                        pointer-events: all;
+                        position: relative;
+                    }
+                    .price-range::-moz-range-thumb {
+                        width: 15px;
+                        height: 15px;
+                        background: #007bff;
+                        border-radius: 50%;
+                        cursor: pointer;
+                        pointer-events: all;
+                    }
+                    .price-range-display {
+                        font-size: 16px;
+                        margin-top: 10px;
+                    }
+                </style>
+
+                <h3>Цвет</h3>
+                <ul>
+                    <li><input type="radio" id="white" name="color" value="Белый" {% if 'Белый' in colors %}checked{% endif %}> <label for="white">Белый</label></li>                    
+                    <li><input type="radio" id="black" name="color" value="Черный" {% if 'Черный' in colors %}checked{% endif %}> <label for="black">Черный</label></li>
+                    <li><input type="radio" id="yellow" name="color" value="Желтый" {% if 'Желтый' in colors %}checked{% endif %}> <label for="yellow">Желтый</label></li>
+                    <li><input type="radio" id="all" name="color" value="Все цвета" {% if colors %}{% else %}checked{% endif %}{% if 'Все цвета' in colors %}checked{% endif %}> <label for="all">Все цвета</label></li>
+
+                </ul>
+
+                <h3>Макс. нагрузка</h3>
+                <ul>
+                    <li><input type="radio" id="150kg" name="load_limits" value="до 150 кг" {% if 'до 150 кг' in load_limits %}checked{% endif %}> <label for="150kg">до 150 кг</label></li>
+                    <li><input type="radio" id="200kg" name="load_limits" value="до 200 кг" {% if 'до 200 кг' in load_limits %}checked{% endif %}> <label for="200kg">до 200 кг</label></li>
+                    <li><input type="radio" id="250kg" name="load_limits" value="до 250 кг" {% if 'до 250 кг' in load_limits %}checked{% endif %}> <label for="250kg">до 250 кг</label></li>
+                    <li><input type="radio" id="300kg" name="load_limits" value="до 300 кг" {% if 'до 300 кг' in load_limits %}checked{% endif %}> <label for="300kg">до 300 кг</label></li>
+                    <li><input type="radio" id="all" name="load_limits" value="Любой" {% if load_limits %}{% else %}checked{% endif %}{% if 'Любой' in load_limits %}checked{% endif %}> <label for="all">Любой вес</label></li>
+                </ul>
+
+            </aside>
+
+            <!-- Товары -->
+            <div class="products">
+
+                <div class="product-grid">
+                    {% for wall in swedish_walls_sort %}
+                    <div class="product-card">
+                        <img src="{{ wall.img.url }}" alt="{{ wall.name }}">
+                        <h4>{{ wall.name }}</h4>
+                        <p class="price">{{ wall.price }}</p>
+                        <button class="add-to-cart-btn">Купить</button>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    // Функция для применения фильтров и сортировки
+    function applyFiltersAndSort() {
+        const sortBy = document.getElementById('sortSelect').value;
+        const minPrice = document.getElementById('minPriceRange').value;
+        const maxPrice = document.getElementById('maxPriceRange').value;
+        const color = document.querySelector('input[name="color"]:checked')?.value || '';
+        const loadLimit = document.querySelector('input[name="load_limits"]:checked')?.value || '';
+
+        // Формируем параметры для GET-запроса
+        const params = new URLSearchParams({
+            sort_by: sortBy,
+            min_price: minPrice,
+            max_price: maxPrice,
+            color: color,
+            load_limits: loadLimit,
+        });
+
+        // Асинхронно загружаем товары
+        fetch(`/swedish_walls/?${params.toString()}`, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(response => response.text())
+        .then(html => {
+            document.querySelector('.product-grid').innerHTML = html;
+            window.history.pushState(null, '', `?${params.toString()}`);
+        })
+        .catch(error => console.error('Ошибка:', error));
+    }
+
+    document.getElementById('sortSelect').addEventListener('change', applyFiltersAndSort);
+    document.getElementById('minPriceRange').addEventListener('input', applyFiltersAndSort);
+    document.getElementById('maxPriceRange').addEventListener('input', applyFiltersAndSort);
+
+    document.querySelectorAll('input[name="color"]').forEach(radio => {
+        radio.addEventListener('change', applyFiltersAndSort);
+    });
+
+    document.querySelectorAll('input[name="load_limits"]').forEach(radio => {
+        radio.addEventListener('change', applyFiltersAndSort);
+    });
+
+    // Поддержка кнопок "Назад" и "Вперёд"
+    window.addEventListener('popstate', function() {
+        applyFiltersAndSort();
+    });
+</script>
+
+{% endblock %}

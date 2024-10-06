@@ -1,0 +1,391 @@
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login
+from django.http import JsonResponse
+from .forms import LoginForm, RegisterForm
+from .models import SwedishWall, HorizontalBar, Nutrition, WeightliftingProduct, Product, Cart, CartItem
+from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required
+import uuid
+from yookassa import Configuration, Payment
+Configuration.account_id = 462847
+Configuration.secret_key = 'test_sneaHyRCKhgMHiDIqMPugDW_q3rV4KQ5UBzfSWCDI1M'
+from dadata import Dadata
+import re
+
+dadata_token = '379f5d20568c976d8fe913e09fcf6491bd12a01c'
+dadata_secret = '37667482de471ccda2255440bb3de579ad51ffdf'
+
+
+def login_view(request):
+    if request.method == 'POST':
+        login_form = LoginForm(request, data=request.POST)
+
+        if login_form.is_valid():
+            user = login_form.get_user()
+            login(request, user)
+            return JsonResponse({'success': True})  
+
+        return JsonResponse({'success': False, 'error': 'Неверные учетные данные'}, status=400)
+
+def register_view(request):
+    if request.method == 'POST':
+        register_form = RegisterForm(request.POST)
+
+        if register_form.is_valid():
+            register_form.save()  
+            user = authenticate(username=register_form.cleaned_data['username'],
+                                password=register_form.cleaned_data['password1'])
+            if user:
+                login(request, user)  
+                return JsonResponse({'success': True})
+
+        return JsonResponse({'success': False, 'error': 'Ошибка регистрации. Проверьте введенные данные.'}, status=400)
+
+def homepage(request):
+    login_form = LoginForm()
+    register_form = RegisterForm()
+    return render(request, 'main/homepage.html', {
+        'login_form': login_form,
+        'register_form': register_form,
+    })
+
+def catalogue(request):
+    return render(request, 'main/catalogue.html')
+
+def cart(request):
+    return render(request, 'main/cart.html')
+
+def product_card(request, id):
+    product = Product.objects.get(id=id)
+    return render(request, 'main/product_card.html', {'product': product})
+
+@require_POST
+def update_quantity(request):
+    try:
+        cart = Cart.objects.get(user=request.user)
+        item_id = request.POST.get('item_id')
+        new_quantity = int(request.POST.get('quantity'))
+        
+        cart_item = CartItem.objects.get(id=item_id, cart=cart)
+
+        if new_quantity > 0:
+            cart_item.quantity = new_quantity
+            cart_item.save()
+            response = {'status': 'success', 'total_price': cart_item.get_total_price(), 'cart_total': cart.get_total_price()}
+        else:
+            response = {'status': 'error', 'message': 'Количество должно быть больше 0'}
+        
+        return JsonResponse(response)
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)})
+
+@require_POST
+def remove_item(request):
+    try:
+        cart = Cart.objects.get(user=request.user)
+        item_id = request.POST.get('item_id')
+        
+        cart_item = CartItem.objects.get(id=item_id, cart=cart)
+        cart_item.delete()
+        
+        response = {'status': 'success', 'cart_total': cart.get_total_price()}
+        return JsonResponse(response)
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)})
+
+@require_POST
+@login_required
+def add_to_cart(request):
+    product_id = request.POST.get('product_id')
+    quantity = int(request.POST.get('quantity', 1))
+
+    try:
+        product = Product.objects.get(id=product_id)
+    except Product.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Product does not exist'}, status=404)
+
+    cart, created = Cart.objects.get_or_create(user=request.user)
+
+    cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
+
+    if not created:
+        cart_item.quantity += quantity
+    else:
+        cart_item.quantity = quantity
+
+    cart_item.save()
+
+    return JsonResponse({'status': 'success', 'message': 'Product added to cart', 'cart_quantity': cart_item.quantity})
+
+def cart(request):
+    cart = Cart.objects.get(user=request.user)
+    return render(request, 'main/cart.html', {'cart':cart})
+def swedish_walls(request):
+    login_form = LoginForm()
+    register_form = RegisterForm()
+    COLOR_MAP = {
+        'Белый': 'white',
+        'Черный': 'black',
+        'Желтый': 'yellow',
+        'Все цвета': 'all'
+    }
+    sort_by = request.GET.get('sort_by', 'popularity')
+    min_price = request.GET.get('min_price', 8990)
+    max_price = request.GET.get('max_price', 24990)
+    color = request.GET.get('color')
+    load_limits = request.GET.get('load_limits')
+
+
+    
+
+    selected_color_eng = COLOR_MAP.get(color)
+    # Фильтруем товары по цене и выбранным фильтрам
+    walls = SwedishWall.objects.filter(price__gte=min_price, price__lte=max_price)
+
+    if selected_color_eng == 'all' or selected_color_eng == None:
+        pass
+    else:
+        walls = walls.filter(color=selected_color_eng)
+    
+
+
+    if load_limits == 'Любой' or load_limits == None:
+        pass
+    else:
+        walls = walls.filter(max_load=load_limits)
+
+    
+    # Сортируем товары
+    if sort_by == 'price':
+        walls = walls.order_by('price')
+    else:
+        walls = walls.order_by('-popularity')
+
+    print(walls)
+    context = {
+        'swedish_walls_sort': walls,
+        'sort_by': sort_by,
+        'min_price': min_price,
+        'max_price': max_price,
+        'colors': color,
+        'load_limits': load_limits,
+        'login_form': login_form,
+        'register_form': register_form,
+    }
+
+    # Если это AJAX-запрос, возвращаем только часть с товарами
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return render(request, 'main/includes/swedish_walls_list.html', context)
+
+    return render(request, 'main/swedish_walls.html', context)
+
+def horizontal_bars(request):
+    login_form = LoginForm()
+    register_form = RegisterForm()
+    COLOR_MAP = {
+        'Серебряный': 'silver',
+        'Белый': 'white',
+        'Черный': 'black',
+        'Желтый': 'yellow',
+        'Синий': 'blue',
+        'Все цвета': 'all'
+    }
+    sort_by = request.GET.get('sort_by', 'popularity')
+    min_price = request.GET.get('min_price', 2990)
+    max_price = request.GET.get('max_price', 15990)
+    color = request.GET.get('color')
+    load_limits = request.GET.get('load_limits')
+    
+
+
+    
+
+    selected_color_eng = COLOR_MAP.get(color)
+    # Фильтруем товары по цене и выбранным фильтрам
+    bars = HorizontalBar.objects.filter(price__gte=min_price, price__lte=max_price)
+
+
+
+    if selected_color_eng == 'all' or selected_color_eng == None:
+        pass
+    else:
+        bars = bars.filter(color=selected_color_eng)
+
+
+    if load_limits == 'Любой' or load_limits == None:
+        pass
+    else:
+        bars = bars.filter(max_load=load_limits)
+
+    # Сортируем товары
+    if sort_by == 'price':
+        bars = bars.order_by('price')
+    else:
+        bars = bars.order_by('-popularity')
+
+    context = {
+        'horizontal_bars_sort': bars,
+        'sort_by': sort_by,
+        'min_price': min_price,
+        'max_price': max_price,
+        'colors': color,
+        'load_limits': load_limits,
+        'login_form': login_form,
+        'register_form': register_form,
+    }
+
+    # Если это AJAX-запрос, возвращаем только часть с товарами
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return render(request, 'main/includes/horizontal_bars_list.html', context)
+
+    return render(request, 'main/horizontal_bars.html', context)
+
+def nutrition(request):
+    login_form = LoginForm()
+    register_form = RegisterForm()
+
+    sort_by = request.GET.get('sort_by', 'popularity')
+    min_price = request.GET.get('min_price', 1690)
+    max_price = request.GET.get('max_price', 3990)
+    category = request.GET.get('category')
+    flavour = request.GET.get('flavour')
+
+
+
+    nutrition = Nutrition.objects.filter(price__gte=min_price, price__lte=max_price)
+
+
+
+    if category == 'Любая категория' or category == None:
+        pass
+    else:
+        nutrition = nutrition.filter(category=category)
+        
+
+    if flavour == 'Любой' or flavour == None:
+        pass
+    else:
+        print(flavour)
+        nutrition = nutrition.filter(flavor=flavour)
+
+    # Сортируем товары
+    if sort_by == 'price':
+        nutrition = nutrition.order_by('price')
+    else:
+        nutrition = nutrition.order_by('-popularity')
+
+    context = {
+        'nutrition_sort': nutrition,
+        'sort_by': sort_by,
+        'min_price': min_price,
+        'max_price': max_price,
+        'category': category,
+        'flavour': flavour,
+        'login_form': login_form,
+        'register_form': register_form,
+    }
+
+    # Если это AJAX-запрос, возвращаем только часть с товарами
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return render(request, 'main/includes/nutrition_list.html', context)
+
+    return render(request, 'main/nutrition.html', context)
+
+def lifting(request):
+    login_form = LoginForm()
+    register_form = RegisterForm()
+
+    sort_by = request.GET.get('sort_by', 'popularity')
+    min_price = request.GET.get('min_price', 2990)
+    max_price = request.GET.get('max_price', 38990)
+    weight = request.GET.get('weight')
+    category = request.GET.get('category')
+    print(category)
+
+
+
+    lifting = WeightliftingProduct.objects.filter(price__gte=min_price, price__lte=max_price)
+    
+
+
+    if category == 'Любая категория' or category == None:
+        pass
+    else:
+        lifting = lifting.filter(category=category)
+        
+
+    if weight == 'Любой' or weight == None:
+        pass
+    else:
+        lifting = lifting.filter(weight=weight)
+
+    # Сортируем товары
+    if sort_by == 'price':
+        lifting = lifting.order_by('price')
+    else:
+        lifting = lifting.order_by('-popularity')
+
+    context = {
+        'lifting_sort': lifting,
+        'sort_by': sort_by,
+        'min_price': min_price,
+        'max_price': max_price,
+        'category': category,
+        'weight': weight,
+        'login_form': login_form,
+        'register_form': register_form,
+    }
+
+    # Если это AJAX-запрос, возвращаем только часть с товарами
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return render(request, 'main/includes/lifting_list.html', context)
+
+    return render(request, 'main/lifting.html', context)
+
+
+@login_required
+def order(request):
+    cart = Cart.objects.get(user=request.user)
+    if request.method == 'POST':
+        token = dadata_token
+        secret = dadata_secret
+        dadata = Dadata(token, secret)
+        address = request.POST.get('address')
+        print(address)
+        try:
+            result = dadata.clean("address", address)
+            if result.get('qc') == 0: 
+                found_address = result.get('result')
+                print(found_address)
+                value = cart.get_total_price()
+                payment = Payment.create({
+                "amount": {
+                    "value": value,
+                    "currency": "RUB"
+                },
+                "confirmation": {
+                    "type": "redirect",
+                    "return_url": "http://127.0.0.1:8000/cart"
+                },
+                "capture": True,
+                "description": "Заказ №1"
+                }, uuid.uuid4())
+                confirmation_url = payment.confirmation.confirmation_url
+
+                return redirect(confirmation_url)
+
+
+            else:  # Адрес не найден
+                error_message = "Такого адреса нет"
+                print(error_message)
+                return render(request, 'main/order.html', {
+                    'error_message': error_message
+                })
+        except Exception as e:
+                print(f"Ошибка при обращении к Dadata API: {e}")
+                error_message = "Ошибка при обработке адреса"
+                return render(request, 'main/order.html', {
+                    'error_message': error_message
+                })
+
+    return render(request, 'main/order.html', {'cart': cart})

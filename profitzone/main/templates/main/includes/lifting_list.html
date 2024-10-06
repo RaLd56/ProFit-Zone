@@ -1,0 +1,11 @@
+
+{% for lifting in lifting_sort %}
+<a style="text-decoration: none;" href="{% url 'product_card' lifting.id %}">
+    <div class="product-card">
+        <img src="{{ lifting.img.url }}" alt="{{ lifting.name }}">
+        <h4>{{ lifting.name }}</h4>
+        <p class="price">{{ lifting.price }}</p>
+        <button class="add-to-cart-btn">Купить</button>
+    </div>
+    </a>
+{% endfor %}

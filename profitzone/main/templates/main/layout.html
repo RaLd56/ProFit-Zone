@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'main/css/main.css' %}">
+    <link rel="icon" href="{% static 'main/img/favico.ico' %}" type="image/x-icon">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+
+    <style>
+        /* Стили для модальных окон */
+        .modal {
+            display: none; /* Скрываем по умолчанию */
+            position: fixed;
+            z-index: 10;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Полупрозрачный фон */
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 300px;
+            text-align: center;
+        }
+        .modal-content h2 {
+            margin-bottom: 20px;
+        }
+        .modal-content input {
+            display: block;
+            width: 100%;
+            margin-bottom: 15px;
+            padding: 10px;
+        }
+        .modal-content button {
+            padding: 10px 20px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .modal-content .link {
+            margin-top: 10px;
+            display: block;
+            cursor: pointer;
+            color: #007bff;
+        }
+        .close {
+            color: red;
+            font-size: 18px;
+            float: right;
+            cursor: pointer;
+        }
+        #login-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #4CAF50; /* Зеленый цвет фона */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+#login-btn:hover {
+    background-color: #45a049; /* Более темный зеленый при наведении */
+}
+
+#login-btn:active {
+    background-color: #3e8e41; /* Еще темнее при нажатии */
+    transform: scale(0.98); /* Легкий эффект уменьшения при нажатии */
+}
+
+#login-btn:focus {
+    outline: none; /* Убираем стандартную обводку при фокусе */
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.4); /* Обводка при фокусе */
+}
+
+
+
+
+
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-container">
+            <div class="logo">
+                <a href="/">ProFit Zone</a>
+            </div>
+            <nav>
+                <ul>
+                    <li><a id='homepage_link' href="/">Главная</a></li>
+                    <li><a href="{% url 'catalogue' %}">Продукция</a></li>
+                    <li><a href="/about">О нас</a></li>
+                    <li><a href="/contact">Контакты</a></li>
+                </ul>
+            </nav>
+            {% if user.is_authenticated %}
+            <div class="cart">
+                <a href="{% url 'cart' %}" id="cart-btn">Корзина</a>
+            </div>
+                <form action="{% url 'logout' %}" method="post">
+                    {% csrf_token %}
+                <button style="background-color:#333; border: none; cursor: pointer;" type="submit">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="white" viewBox="0 0 256 256">
+                      <path
+                        d="M112,216a8,8,0,0,1-8,8H48a16,16,0,0,1-16-16V48A16,16,0,0,1,48,32h56a8,8,0,0,1,0,16H48V208h56A8,8,0,0,1,112,216Zm109.66-93.66-40-40a8,8,0,0,0-11.32,11.32L196.69,120H104a8,8,0,0,0,0,16h92.69l-26.35,26.34a8,8,0,0,0,11.32,11.32l40-40A8,8,0,0,0,221.66,122.34Z"
+                      ></path>
+                    </svg>
+                </button>
+                </form>
+            {% else %}
+            <button id="login-btn">Войти</a>
+            {% endif %}
+        </div>
+    </header>
+
+    <!-- Вход -->
+<div id="login-modal" class="modal" style="display: {% if login_modal_open %}flex{% else %}none{% endif %};">
+    <div class="modal-content">
+        <h2>Вход</h2>
+        <p id="login-error" style="color: red;"></p> <!-- Вывод ошибок -->
+        <form id="login-form">
+            {% csrf_token %}
+            {{ login_form.as_p }}
+            <button type="submit" name="login">Войти</button>
+        </form>
+        <span class="link" id="open-register">Нет аккаунта? Зарегистрируйтесь</span>
+    </div>
+</div>
+
+<!-- Регистрация -->
+<div id="register-modal" class="modal" style="display: {% if register_modal_open %}flex{% else %}none{% endif %};">
+    <div class="modal-content">
+        <h2>Регистрация</h2>
+        <p id="register-error" style="color: red;"></p> <!-- Вывод ошибок -->
+        <form id="register-form">
+            {% csrf_token %}
+            {{ register_form.as_p }}
+            <button type="submit" name="register">Зарегистрироваться</button>
+        </form>
+        <span class="link" id="open-login">Уже есть аккаунт? Войдите</span>
+    </div>
+</div>
+
+
+
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-columns">
+                <div class="footer-column">
+                    <h3>О магазине</h3>
+                    <ul>
+                        <li><a href="/about">Наша миссия</a></li>
+                        <li><a href="/privacy">Политика конфиденциальности</a></li>
+                        <li><a href="/terms">Условия использования</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Контакты</h3>
+                    <ul>
+                        <li><a href="/contact">Обратная связь</a></li>
+                        <li>+7 (800) 123-45-67</li>
+                        <li>Email: info@profitzone.ru</li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Мы в соцсетях</h3>
+                    <ul>
+                        <li><a href="#">Instagram</a></li>
+                        <li><a href="#">ВКонтакте</a></li>
+                        <li><a href="#">Facebook</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Асинхронная отправка формы логина
+        const loginForm = document.getElementById('login-form');
+        loginForm.addEventListener('submit', async function(event) {
+            event.preventDefault();
+            
+            const formData = new FormData(loginForm);
+            const csrfToken = formData.get('csrfmiddlewaretoken');
+            
+            const response = await fetch("{% url 'login' %}", {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': csrfToken
+                }
+            });
+    
+            const result = await response.json();
+            
+            if (response.ok) {
+                window.location.reload(); // Если вход успешен, перезагружаем страницу
+            } else {
+                document.getElementById('login-error').innerText = result.error; // Вывод ошибок
+            }
+        });
+    
+        // Асинхронная отправка формы регистрации
+        const registerForm = document.getElementById('register-form');
+        registerForm.addEventListener('submit', async function(event) {
+            event.preventDefault();
+    
+            const formData = new FormData(registerForm);
+            const csrfToken = formData.get('csrfmiddlewaretoken');
+            
+            const response = await fetch("{% url 'register' %}", {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': csrfToken
+                }
+            });
+    
+            const result = await response.json();
+    
+            if (response.ok) {
+                window.location.reload(); // Если регистрация успешна, перезагружаем страницу
+            } else {
+                document.getElementById('register-error').innerText = result.error; // Вывод ошибок
+            }
+        });
+    
+
+        const loginBtn = document.getElementById('login-btn');
+        const loginModal = document.getElementById('login-modal');
+        const closeLogin = document.getElementById('close-login');
+        const openRegister = document.getElementById('open-register');
+
+        const registerModal = document.getElementById('register-modal');
+        const closeRegister = document.getElementById('close-register');
+        const openLogin = document.getElementById('open-login');
+
+        // Открытие модального окна для входа
+        loginBtn.onclick = function() {
+            loginModal.style.display = "flex";
+        }
+
+
+        // Открытие окна регистрации и закрытие окна входа
+        openRegister.onclick = function() {
+            loginModal.style.display = "none";
+            registerModal.style.display = "flex";
+        }
+
+
+        // Открытие окна входа и закрытие окна регистрации
+        openLogin.onclick = function() {
+            registerModal.style.display = "none";
+            loginModal.style.display = "flex";
+        }
+
+        // Закрытие модального окна при клике вне его
+        window.onclick = function(event) {
+
+            if (event.target == loginModal) {
+                loginModal.style.display = "none";
+
+            }
+            if (event.target == registerModal) {
+                registerModal.style.display = "none";
+
+            }
+        }
+    </script>
+
+</body>
+</html>

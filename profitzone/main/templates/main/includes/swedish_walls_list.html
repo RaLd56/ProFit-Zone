@@ -1,0 +1,10 @@
+
+{% for wall in swedish_walls_sort %}
+<div class="product-card">
+    <img src="{{ wall.img.url }}" alt="{{ wall.name }}">
+    <h4>{{ wall.name }}</h4>
+    <p class="price">{{ wall.price }}</p>
+    <button class="add-to-cart-btn">В корзину</button>
+</div>
+{% endfor %}
+

@@ -15,6 +15,9 @@ import re
 dadata_token = '379f5d20568c976d8fe913e09fcf6491bd12a01c'
 dadata_secret = '37667482de471ccda2255440bb3de579ad51ffdf'
 
+def delivery(request):
+    return render(request, 'main/free_delivery.html')
+
 
 def login_view(request):
     if request.method == 'POST':

@@ -131,12 +131,14 @@
 
                 <div class="product-grid">
                     {% for horizontal_bar in horizontal_bars_sort %}
+                    <a style="text-decoration: none;" href="{% url 'product_card' horizontal_bar.id %}">
                     <div class="product-card">
                         <img src="{{ horizontal_bar.img.url }}" alt="{{ horizontal_bar.name }}">
                         <h4>{{ horizontal_bar.name }}</h4>
                         <p class="price">{{ horizontal_bar.price }}</p>
                         <button class="add-to-cart-btn">Купить</button>
                     </div>
+                    </a>
                     {% endfor %}
                 </div>
             </div>

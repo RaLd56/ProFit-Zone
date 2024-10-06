@@ -10,7 +10,7 @@ ProFit Zone
                 <div class="banner large-banner" style="background-image: url('{% static 'main/img/banner-background.jpeg' %}')">
                     <h2>Скидка 50% на спортивное питание!</h2>
                     <p>Только до конца месяца! Успей купить.</p>
-                    <a href="/products/supplements" class="btn">Купить сейчас</a>
+                    <a href="{% url 'nutrition' %}" class="btn">Купить сейчас</a>
                 </div>
                 <div class="banner small-banner" style="background-image: url('{% static 'main/img/banner-small-background.jpeg' %}')">
                     <h2>Бесплатная доставка</h2>
@@ -20,7 +20,7 @@ ProFit Zone
                 <div class="banner small-banner" style="background-image: url('{% static 'main/img/banner2-small-background.jpeg' %}')">
                     <h2>Новинки оборудования</h2>
                     <p>Новые тренажёры и аксессуары для фитнеса.</p>
-                    <a href="/products/equipment" class="btn">Узнать больше</a>
+                    <a href="{% url 'lifting' %}" class="btn">Узнать больше</a>
                 </div>
             </div>
         </section>        
@@ -28,41 +28,36 @@ ProFit Zone
             <div class="container">
                 <h2>Шведские стенки</h2>                
                 <div class="swedish-walls-grid">
-                    <div class="wall-item">
-                        <img src="{% static 'main/img/swedish-wall-1.png' %}" alt="Шведская стенка 1">
-                        <h3>Шведская стенка IronClimb</h3>
-                        <p>Компактная и прочная стенка для дома. Подходит для взрослых и детей.</p>
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <span class="price">14990₽</span>
-                            <a href="#" class="cart-icon">
-                                <svg width="22px" height="22px" viewBox="0 0 1024 1024" fill="currentColor" x="242" y="242" role="img" style="display:inline-block;vertical-align:middle" xmlns="http://www.w3.org/2000/svg"><g fill="currentColor"><path fill="currentColor" d="M922.9 701.9H327.4l29.9-60.9l496.8-.9c16.8 0 31.2-12 34.2-28.6l68.8-385.1c1.8-10.1-.9-20.5-7.5-28.4a34.99 34.99 0 0 0-26.6-12.5l-632-2.1l-5.4-25.4c-3.4-16.2-18-28-34.6-28H96.5a35.3 35.3 0 1 0 0 70.6h125.9L246 312.8l58.1 281.3l-74.8 122.1a34.96 34.96 0 0 0-3 36.8c6 11.9 18.1 19.4 31.5 19.4h62.8a102.43 102.43 0 0 0-20.6 61.7c0 56.6 46 102.6 102.6 102.6s102.6-46 102.6-102.6c0-22.3-7.4-44-20.6-61.7h161.1a102.43 102.43 0 0 0-20.6 61.7c0 56.6 46 102.6 102.6 102.6s102.6-46 102.6-102.6c0-22.3-7.4-44-20.6-61.7H923c19.4 0 35.3-15.8 35.3-35.3a35.42 35.42 0 0 0-35.4-35.2zM305.7 253l575.8 1.9l-56.4 315.8l-452.3.8L305.7 253zm96.9 612.7c-17.4 0-31.6-14.2-31.6-31.6c0-17.4 14.2-31.6 31.6-31.6s31.6 14.2 31.6 31.6a31.6 31.6 0 0 1-31.6 31.6zm325.1 0c-17.4 0-31.6-14.2-31.6-31.6c0-17.4 14.2-31.6 31.6-31.6s31.6 14.2 31.6 31.6a31.6 31.6 0 0 1-31.6 31.6z"/></g></svg>
+                    <div class="product-grid">
+                        <a style="text-decoration: none;" href="{% url 'product_card' 1 %}">
+                        <div class="product-card">
+                            <img src="{% static 'main/img/swedish-wall-1.png' %}" alt="Шведская стенка 1">
+                            <h4>Шведская стенка IronClimb</h4>
+                            <p class="price">14980</p>
+                            <button class="add-to-cart-btn">Купить</button>
+                        </div>
+                        </a>
+                    </div>
+                        <div class="product-grid">
+                            <a style="text-decoration: none;" href="{% url 'product_card' 2 %}">
+                            <div class="product-card">
+                                <img src="{% static 'main/img/swedish-wall-2.png' %}" alt="Шведская стенка 2">
+                                <h4>Шведская стенка TitanPro</h4>
+                                <p class="price">19980</p>
+                                <button class="add-to-cart-btn">Купить</button>
+                            </div>
                             </a>
                         </div>
-                    </div>
-                    
-                    <div class="wall-item">
-                        <img src="{% static 'main/img/swedish-wall-2.png' %}" alt="Шведская стенка 2">
-                        <h3>Шведская стенка TitanPro</h3>
-                        <p>Профессиональная шведская стенка для интенсивных тренировок.</p>
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <span class="price">18990₽</span>
-                            <a href="#" class="cart-icon">
-                                <svg width="22px" height="22px" viewBox="0 0 1024 1024" fill="currentColor" x="242" y="242" role="img" style="display:inline-block;vertical-align:middle" xmlns="http://www.w3.org/2000/svg"><g fill="currentColor"><path fill="currentColor" d="M922.9 701.9H327.4l29.9-60.9l496.8-.9c16.8 0 31.2-12 34.2-28.6l68.8-385.1c1.8-10.1-.9-20.5-7.5-28.4a34.99 34.99 0 0 0-26.6-12.5l-632-2.1l-5.4-25.4c-3.4-16.2-18-28-34.6-28H96.5a35.3 35.3 0 1 0 0 70.6h125.9L246 312.8l58.1 281.3l-74.8 122.1a34.96 34.96 0 0 0-3 36.8c6 11.9 18.1 19.4 31.5 19.4h62.8a102.43 102.43 0 0 0-20.6 61.7c0 56.6 46 102.6 102.6 102.6s102.6-46 102.6-102.6c0-22.3-7.4-44-20.6-61.7h161.1a102.43 102.43 0 0 0-20.6 61.7c0 56.6 46 102.6 102.6 102.6s102.6-46 102.6-102.6c0-22.3-7.4-44-20.6-61.7H923c19.4 0 35.3-15.8 35.3-35.3a35.42 35.42 0 0 0-35.4-35.2zM305.7 253l575.8 1.9l-56.4 315.8l-452.3.8L305.7 253zm96.9 612.7c-17.4 0-31.6-14.2-31.6-31.6c0-17.4 14.2-31.6 31.6-31.6s31.6 14.2 31.6 31.6a31.6 31.6 0 0 1-31.6 31.6zm325.1 0c-17.4 0-31.6-14.2-31.6-31.6c0-17.4 14.2-31.6 31.6-31.6s31.6 14.2 31.6 31.6a31.6 31.6 0 0 1-31.6 31.6z"/></g></svg>
-                            </a>
-                        </div>
-                    </div>
-                    
-                    <div class="wall-item">
-                        <img src="{% static 'main/img/swedish-wall-3.png' %}" alt="Шведская стенка 3">
-                        <h3>Шведская стенка LuxPrime</h3>
-                        <p>Шведская стенка IronClimb — это идеальное решение для домашних тренировок.</p>
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <span class="price">8990₽</span>
-                            <a href="#" class="cart-icon">
-                                <svg width="22px" height="22px" viewBox="0 0 1024 1024" fill="currentColor" x="242" y="242" role="img" style="display:inline-block;vertical-align:middle" xmlns="http://www.w3.org/2000/svg"><g fill="currentColor"><path fill="currentColor" d="M922.9 701.9H327.4l29.9-60.9l496.8-.9c16.8 0 31.2-12 34.2-28.6l68.8-385.1c1.8-10.1-.9-20.5-7.5-28.4a34.99 34.99 0 0 0-26.6-12.5l-632-2.1l-5.4-25.4c-3.4-16.2-18-28-34.6-28H96.5a35.3 35.3 0 1 0 0 70.6h125.9L246 312.8l58.1 281.3l-74.8 122.1a34.96 34.96 0 0 0-3 36.8c6 11.9 18.1 19.4 31.5 19.4h62.8a102.43 102.43 0 0 0-20.6 61.7c0 56.6 46 102.6 102.6 102.6s102.6-46 102.6-102.6c0-22.3-7.4-44-20.6-61.7h161.1a102.43 102.43 0 0 0-20.6 61.7c0 56.6 46 102.6 102.6 102.6s102.6-46 102.6-102.6c0-22.3-7.4-44-20.6-61.7H923c19.4 0 35.3-15.8 35.3-35.3a35.42 35.42 0 0 0-35.4-35.2zM305.7 253l575.8 1.9l-56.4 315.8l-452.3.8L305.7 253zm96.9 612.7c-17.4 0-31.6-14.2-31.6-31.6c0-17.4 14.2-31.6 31.6-31.6s31.6 14.2 31.6 31.6a31.6 31.6 0 0 1-31.6 31.6zm325.1 0c-17.4 0-31.6-14.2-31.6-31.6c0-17.4 14.2-31.6 31.6-31.6s31.6 14.2 31.6 31.6a31.6 31.6 0 0 1-31.6 31.6z"/></g></svg>
-                            </a>
-                        </div>
-                    </div>
+                            <div class="product-grid">
+                                <a style="text-decoration: none;" href="{% url 'product_card' 4 %}">
+                                <div class="product-card">
+                                    <img src="{% static 'main/img/swedish-wall-3.png' %}" alt="Шведская стенка 2">
+                                    <h4>Шведская стенка IronClimb</h4>
+                                    <p class="price">24990</p>
+                                    <button class="add-to-cart-btn">Купить</button>
+                                </div>
+                                </a>
+                            </div>
                 </div>
             </div>
         </section>
@@ -70,41 +65,37 @@ ProFit Zone
             <div class="container">
                 <h2>Тяжёлая атлетика</h2>                
                 <div class="weightlifting-grid">
-                    <div class="weight-item">
-                        <img src="{% static 'main/img/barbell-1.png' %}" alt="Набор штанг">
-                        <h3>Штанга разборная</h3>
-                        <p>Штанга для тренировок в домашних условиях, вес до 50 кг.</p>
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <span class="price">25990₽</span>
-                            <a href="#" class="cart-icon">
-                                <svg width="22px" height="22px" viewBox="0 0 1024 1024" fill="currentColor" x="242" y="242" role="img" style="display:inline-block;vertical-align:middle" xmlns="http://www.w3.org/2000/svg"><g fill="currentColor"><path fill="currentColor" d="M922.9 701.9H327.4l29.9-60.9l496.8-.9c16.8 0 31.2-12 34.2-28.6l68.8-385.1c1.8-10.1-.9-20.5-7.5-28.4a34.99 34.99 0 0 0-26.6-12.5l-632-2.1l-5.4-25.4c-3.4-16.2-18-28-34.6-28H96.5a35.3 35.3 0 1 0 0 70.6h125.9L246 312.8l58.1 281.3l-74.8 122.1a34.96 34.96 0 0 0-3 36.8c6 11.9 18.1 19.4 31.5 19.4h62.8a102.43 102.43 0 0 0-20.6 61.7c0 56.6 46 102.6 102.6 102.6s102.6-46 102.6-102.6c0-22.3-7.4-44-20.6-61.7h161.1a102.43 102.43 0 0 0-20.6 61.7c0 56.6 46 102.6 102.6 102.6s102.6-46 102.6-102.6c0-22.3-7.4-44-20.6-61.7H923c19.4 0 35.3-15.8 35.3-35.3a35.42 35.42 0 0 0-35.4-35.2zM305.7 253l575.8 1.9l-56.4 315.8l-452.3.8L305.7 253zm96.9 612.7c-17.4 0-31.6-14.2-31.6-31.6c0-17.4 14.2-31.6 31.6-31.6s31.6 14.2 31.6 31.6a31.6 31.6 0 0 1-31.6 31.6zm325.1 0c-17.4 0-31.6-14.2-31.6-31.6c0-17.4 14.2-31.6 31.6-31.6s31.6 14.2 31.6 31.6a31.6 31.6 0 0 1-31.6 31.6z"/></g></svg>
-                            </a>
+                    <div class="product-grid">
+                        <a style="text-decoration: none;" href="{% url 'product_card' 23 %}">
+                        <div class="product-card">
+                            <img src="{% static 'main/img/barbell-1.png' %}" alt="Штанга разборная">
+                            <h4>Штанга разборная</h4>
+                            <p class="price">25990</p>
+                            <button class="add-to-cart-btn">Купить</button>
                         </div>
+                        </a>
                     </div>
-                    
-                    <div class="weight-item">
-                        <img src="{% static 'main/img/dumbbells-adjustable.png' %}" alt="Гантели">
-                        <h3>Регулируемые гантели</h3>
-                        <p>Гантели с возможностью регулировки веса, отличное решение для домашнего зала.</p>
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <span class="price">38990₽</span>
-                            <a href="#" class="cart-icon">
-                                <svg width="22px" height="22px" viewBox="0 0 1024 1024" fill="currentColor" x="242" y="242" role="img" style="display:inline-block;vertical-align:middle" xmlns="http://www.w3.org/2000/svg"><g fill="currentColor"><path fill="currentColor" d="M922.9 701.9H327.4l29.9-60.9l496.8-.9c16.8 0 31.2-12 34.2-28.6l68.8-385.1c1.8-10.1-.9-20.5-7.5-28.4a34.99 34.99 0 0 0-26.6-12.5l-632-2.1l-5.4-25.4c-3.4-16.2-18-28-34.6-28H96.5a35.3 35.3 0 1 0 0 70.6h125.9L246 312.8l58.1 281.3l-74.8 122.1a34.96 34.96 0 0 0-3 36.8c6 11.9 18.1 19.4 31.5 19.4h62.8a102.43 102.43 0 0 0-20.6 61.7c0 56.6 46 102.6 102.6 102.6s102.6-46 102.6-102.6c0-22.3-7.4-44-20.6-61.7h161.1a102.43 102.43 0 0 0-20.6 61.7c0 56.6 46 102.6 102.6 102.6s102.6-46 102.6-102.6c0-22.3-7.4-44-20.6-61.7H923c19.4 0 35.3-15.8 35.3-35.3a35.42 35.42 0 0 0-35.4-35.2zM305.7 253l575.8 1.9l-56.4 315.8l-452.3.8L305.7 253zm96.9 612.7c-17.4 0-31.6-14.2-31.6-31.6c0-17.4 14.2-31.6 31.6-31.6s31.6 14.2 31.6 31.6a31.6 31.6 0 0 1-31.6 31.6zm325.1 0c-17.4 0-31.6-14.2-31.6-31.6c0-17.4 14.2-31.6 31.6-31.6s31.6 14.2 31.6 31.6a31.6 31.6 0 0 1-31.6 31.6z"/></g></svg>
-                            </a>
+                    <div class="product-grid">
+                        <a style="text-decoration: none;" href="{% url 'product_card' 27 %}">
+                        <div class="product-card">
+                            <img src="{% static 'main/img/dumbbells-adjustable.png' %}" alt="Гантели регулируемые">
+                            <h4>Регулируемые гантели</h4>
+                            <p class="price">38990</p>
+                            <button class="add-to-cart-btn">Купить</button>
                         </div>
+                        </a>
                     </div>
-                    
-                    <div class="weight-item">
-                        <img src="{% static 'main/img/weightlifting-belt.png' %}" alt="Пояс для тяжёлой атлетики">
-                        <h3>Пояс для тяжёлой атлетики</h3>
-                        <p>Удобный и надёжный пояс для стабилизации корпуса во время подъёма тяжестей.</p>
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <span class="price">2990₽</span>
-                            <a href="#" class="cart-icon">
-                                <svg width="22px" height="22px" viewBox="0 0 1024 1024" fill="currentColor" x="242" y="242" role="img" style="display:inline-block;vertical-align:middle" xmlns="http://www.w3.org/2000/svg"><g fill="currentColor"><path fill="currentColor" d="M922.9 701.9H327.4l29.9-60.9l496.8-.9c16.8 0 31.2-12 34.2-28.6l68.8-385.1c1.8-10.1-.9-20.5-7.5-28.4a34.99 34.99 0 0 0-26.6-12.5l-632-2.1l-5.4-25.4c-3.4-16.2-18-28-34.6-28H96.5a35.3 35.3 0 1 0 0 70.6h125.9L246 312.8l58.1 281.3l-74.8 122.1a34.96 34.96 0 0 0-3 36.8c6 11.9 18.1 19.4 31.5 19.4h62.8a102.43 102.43 0 0 0-20.6 61.7c0 56.6 46 102.6 102.6 102.6s102.6-46 102.6-102.6c0-22.3-7.4-44-20.6-61.7h161.1a102.43 102.43 0 0 0-20.6 61.7c0 56.6 46 102.6 102.6 102.6s102.6-46 102.6-102.6c0-22.3-7.4-44-20.6-61.7H923c19.4 0 35.3-15.8 35.3-35.3a35.42 35.42 0 0 0-35.4-35.2zM305.7 253l575.8 1.9l-56.4 315.8l-452.3.8L305.7 253zm96.9 612.7c-17.4 0-31.6-14.2-31.6-31.6c0-17.4 14.2-31.6 31.6-31.6s31.6 14.2 31.6 31.6a31.6 31.6 0 0 1-31.6 31.6zm325.1 0c-17.4 0-31.6-14.2-31.6-31.6c0-17.4 14.2-31.6 31.6-31.6s31.6 14.2 31.6 31.6a31.6 31.6 0 0 1-31.6 31.6z"/></g></svg>
-                            </a>
+                    <div class="product-grid">
+                        <a style="text-decoration: none;" href="{% url 'product_card' 28 %}">
+                        <div class="product-card">
+                            <img src="{% static 'main/img/weightlifting-belt.png' %}" alt="Пояс для тяжёлой атлетики">
+                            <h4>Пояс для тяжёлой атлетики</h4>
+                            <p class="price">2990</p>
+                            <button class="add-to-cart-btn">Купить</button>
                         </div>
+                        </a>
                     </div>
+
                 </div>
             </div>
         </section>

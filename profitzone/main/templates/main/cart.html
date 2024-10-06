@@ -50,7 +50,7 @@
     </div>
     {% else %}
     <div class="alert alert-warning text-center" role="alert">
-        Ваша корзина пуста. <a href="#" class="alert-link">Посмотреть товары</a>.
+        Ваша корзина пуста. <a href="{% url 'catalogue' %}" class="alert-link">Посмотреть товары</a>.
     </div>
     {% endif %}
 </div>

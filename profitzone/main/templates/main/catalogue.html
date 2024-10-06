@@ -1,0 +1,181 @@
+{% extends 'main/layout.html' %}
+{% load static %}
+
+{% block title %}
+Турники
+{% endblock %}
+
+{% block content %}
+<section class="product-section">
+    <div class="container">
+        <h1>Все товары</h1>
+        <div class="product-layout">
+            <!-- Фильтры -->
+            <aside class="filters">
+
+                <h3>Сортировка</h3>
+                <select name="sort_by" id="sortSelect">
+                    <option value="popularity" {% if sort_by == 'popularity' %}selected{% endif %}>Популярности</option>
+                    <option value="price" {% if sort_by == 'price' %}selected{% endif %}>Цене</option>
+                </select>
+
+                <h3>Цена</h3>
+                <div class="price-slider-container">
+                    <input type="range" id="minPriceRange" min="0" max="38990" value="{{ request.GET.min_price|default:0 }}" class="price-range" name="min_price">
+                    <input type="range" id="maxPriceRange" min="0" max="38990" value="{{ request.GET.max_price|default:38990 }}" class="price-range" name="max_price">
+                </div>
+                <div class="price-range-display">
+                    <span id="priceMinDisplay">от {{ request.GET.min_price|default:0 }}</span> - <span id="priceMaxDisplay">до {{ request.GET.max_price|default:38990 }}</span> ₽
+                </div>
+
+                <script>
+                const minPriceRange = document.getElementById('minPriceRange');
+                const maxPriceRange = document.getElementById('maxPriceRange');
+                const priceMinDisplay = document.getElementById('priceMinDisplay');
+                const priceMaxDisplay = document.getElementById('priceMaxDisplay');
+
+                // Функция для обновления отображаемых значений
+                function updatePriceDisplay() {
+                    const minValue = parseInt(minPriceRange.value);
+                    const maxValue = parseInt(maxPriceRange.value);
+                    priceMinDisplay.textContent = `от ${minValue}`;
+                    priceMaxDisplay.textContent = `до ${maxValue}`;
+                }
+
+                function handleMinPriceChange() {
+                    if (parseInt(minPriceRange.value) > parseInt(maxPriceRange.value)) {
+                        minPriceRange.value = maxPriceRange.value;
+                    }
+                    updatePriceDisplay();
+                }
+
+                function handleMaxPriceChange() {
+                    if (parseInt(maxPriceRange.value) < parseInt(minPriceRange.value)) {
+                        maxPriceRange.value = minPriceRange.value;
+                    }
+                    updatePriceDisplay();
+                }
+
+                minPriceRange.addEventListener('input', handleMinPriceChange);
+                maxPriceRange.addEventListener('input', handleMaxPriceChange);
+                updatePriceDisplay();
+                </script>
+
+                <style>
+                    .price-slider-container {
+                        position: relative;
+                        width: 100%;
+                        height: 40px;
+                        margin: 10px 0;
+                    }
+                    .price-range {
+                        -webkit-appearance: none;
+                        appearance: none;
+                        width: 100%;
+                        height: 5px;
+                        background: #007bff;
+                        position: absolute;
+                        pointer-events: none;
+                    }
+                    #minPriceRange { z-index: 3; }
+                    #maxPriceRange { z-index: 2; }
+                    .price-range::-webkit-slider-thumb {
+                        -webkit-appearance: none;
+                        appearance: none;
+                        width: 15px;
+                        height: 15px;
+                        background: #007bff;
+                        border-radius: 50%;
+                        cursor: pointer;
+                        pointer-events: all;
+                        position: relative;
+                    }
+                    .price-range::-moz-range-thumb {
+                        width: 15px;
+                        height: 15px;
+                        background: #007bff;
+                        border-radius: 50%;
+                        cursor: pointer;
+                        pointer-events: all;
+                    }
+                    .price-range-display {
+                        font-size: 16px;
+                        margin-top: 10px;
+                    }
+                </style>
+
+                <h3>Категория</h3>
+                <ul>
+                    <li><input type="radio" id="lifting" name="category" value="Тяжелая атлетика" {% if 'Тяжелая атлетика' in category %}checked{% endif %}> <label for="barbells">Тяжелая атлетика</label></li>
+                    <li><input type="radio" id="horizontal_bars" name="category" value="Турники" {% if 'Турники' in category %}checked{% endif %}> <label for="dumbells">Турники</label></li>                    
+                    <li><input type="radio" id="swedish_walls" name="category" value="Шведские стенки" {% if 'Шведские стенки' in category %}checked{% endif %}> <label for="belts">Шведские стенки</label></li>
+                    <li><input type="radio" id="nutrition" name="category" value="Спортивное питание" {% if 'Спортивное питание' in category %}checked{% endif %}> <label for="belts">Спортивное питание</label></li>
+                    <li><input type="radio" id="fitness" name="category" value="Фитнес" {% if 'Фитнес' in category %}checked{% endif %}> <label for="belts">Фитнес</label></li>
+                    <li><input type="radio" id="fighting" name="category" value="Единоборства" {% if 'Единоборства' in category %}checked{% endif %}> <label for="belts">Единоборства</label></li>
+                    <li><input type="radio" id="racks" name="category" value="Стойки для штанг" {% if 'Стойки для штанг' in category %}checked{% endif %}> <label for="belts">Стойки для штанг</label></li>
+                    <li><input type="radio" id="all" name="category" value="Любая категория" {% if category %}{% else %}checked{% endif %}{% if 'Все категории' in category %}checked{% endif %}> <label for="all">Все категории</label></li>
+
+                </ul>
+
+
+            </aside>
+
+            <!-- Товары -->
+            <div class="products">
+
+                <div class="product-grid">
+                    {% for product in products_sort %}
+                    <div class="product-card">
+                        <img src="{{ product.img.url }}" alt="{{ product.name }}">
+                        <h4>{{ product.name }}</h4>
+                        <p class="price">{{ product.price }}</p>
+                        <button class="add-to-cart-btn">Купить</button>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    // Функция для применения фильтров и сортировки
+    function applyFiltersAndSort() {
+        const sortBy = document.getElementById('sortSelect').value;
+        const minPrice = document.getElementById('minPriceRange').value;
+        const maxPrice = document.getElementById('maxPriceRange').value;
+        const category = document.querySelector('input[name="category"]:checked')?.value || '';
+
+        // Формируем параметры для GET-запроса
+        const params = new URLSearchParams({
+            sort_by: sortBy,
+            min_price: minPrice,
+            max_price: maxPrice,
+            category: category,
+        });
+
+        // Асинхронно загружаем товары
+        fetch(`/catalogue/?${params.toString()}`, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(response => response.text())
+        .then(html => {
+            document.querySelector('.product-grid').innerHTML = html;
+            window.history.pushState(null, '', `?${params.toString()}`);
+        })
+        .catch(error => console.error('Ошибка:', error));
+    }
+
+    document.getElementById('sortSelect').addEventListener('change', applyFiltersAndSort);
+    document.getElementById('minPriceRange').addEventListener('input', applyFiltersAndSort);
+    document.getElementById('maxPriceRange').addEventListener('input', applyFiltersAndSort);
+
+    document.querySelectorAll('input[name="category"]').forEach(radio => {
+        radio.addEventListener('change', applyFiltersAndSort);
+    });
+
+    window.addEventListener('popstate', function() {
+        applyFiltersAndSort();
+    });
+</script>
+
+{% endblock %}

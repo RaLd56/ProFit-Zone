@@ -80,3 +80,10 @@ class WeightliftingProduct(Product):
     
     def __str__(self):
         return self.name
+    
+class FitnessProduct(Product):  
+    category = models.CharField(max_length=100)
+    material = models.CharField(max_length=100)
+    
+    def __str__(self):
+        return self.name

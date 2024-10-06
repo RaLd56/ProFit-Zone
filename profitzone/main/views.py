@@ -1,8 +1,8 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
 from .forms import LoginForm, RegisterForm
-from .models import SwedishWall, HorizontalBar, Nutrition, WeightliftingProduct, Product, Cart, CartItem
+from .models import SwedishWall, HorizontalBar, Nutrition, WeightliftingProduct, Product, Cart, CartItem, FitnessProduct
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 import uuid
@@ -50,11 +50,69 @@ def homepage(request):
     })
 
 def catalogue(request):
-    return render(request, 'main/catalogue.html')
+    login_form = LoginForm()
+    register_form = RegisterForm()
+
+    sort_by = request.GET.get('sort_by', 'popularity')
+    min_price = request.GET.get('min_price', 1690)
+    max_price = request.GET.get('max_price', 38990)
+    category = request.GET.get('category')
+    
+
+
+    products = Product.objects.all()    
+
+
+    if category:
+        if category == 'Шведские стенки':
+            products = SwedishWall.objects.all()
+        elif category == 'Турники':
+            products = HorizontalBar.objects.all()
+        elif category == 'Спортивное питание':
+            products = Nutrition.objects.all()
+        elif category == 'Тяжелая атлетика':
+            products = WeightliftingProduct.objects.all()
+        elif category == 'Фитнес':
+            products = FitnessProduct.objects.all()
+        else:
+            products = Product.objects.all()  
+    else:
+        products = Product.objects.all()  
+
+    if min_price:
+        products = products.filter(price__gte=min_price)
+    if max_price:
+        products = products.filter(price__lte=max_price)
+
+    print(category)
+    if sort_by == 'price':
+        products = products.order_by('price')
+    else:
+        products = products.order_by('-popularity')
+    print(products)
+
+    context = {
+        'products_sort': products,
+        'sort_by': sort_by,
+        'min_price': min_price,
+        'max_price': max_price,
+        'category': category,
+        'login_form': login_form,
+        'register_form': register_form,
+    }
+
+    # Если это AJAX-запрос, возвращаем только часть с товарами
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return render(request, 'main/includes/catalogue_list.html', context)
+
+    return render(request, 'main/catalogue.html', context)
 
 
 def product_card(request, id):
     product = Product.objects.get(id=id)
+    product.popularity += 1
+    product.save()
+    product = get_object_or_404(Product, id=id)
     return render(request, 'main/product_card.html', {'product': product})
 
 @require_POST
@@ -103,10 +161,8 @@ def add_to_cart(request):
         return JsonResponse({'status': 'error', 'message': 'Product does not exist'}, status=404)
 
     cart, created = Cart.objects.get_or_create(user=request.user)
-    print(cart)
 
     cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
-    print(cart_item)
     if not created:
         cart_item.quantity += quantity
     else:
@@ -364,7 +420,6 @@ def order(request):
                 "description": "Заказ №1"
             }, uuid.uuid4())
             confirmation_url = payment.confirmation.confirmation_url
-            cart.delete()
             return redirect(confirmation_url)
         
         # Если самовывоз не выбран, продолжаем с обработкой адреса
@@ -392,7 +447,6 @@ def order(request):
                     "description": "Заказ №1"
                 }, uuid.uuid4())
                 confirmation_url = payment.confirmation.confirmation_url
-                cart.delete()
                 return redirect(confirmation_url)
 
             else:  # Адрес не найден

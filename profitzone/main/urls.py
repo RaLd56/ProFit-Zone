@@ -7,7 +7,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('', views.homepage, name='homepage'),
     path('logout', auth_views.LogoutView.as_view(), name='logout'),
-    path('catalogue', views.catalogue, name='catalogue'),
+    path('catalogue/', views.catalogue, name='catalogue'),
     path('swedish_walls', views.swedish_walls, name='swedish_walls'),
     path('login/', views.login_view, name='login'),
     path('register/', views.register_view, name='register'),
@@ -20,7 +20,8 @@ urlpatterns = [
     path('cart', views.cart, name='cart'),
     path('update-quantity/', views.update_quantity, name='update_quantity'),
     path('remove-item/', views.remove_item, name='remove_item'),
-    path('order', views.order, name='order')
+    path('order', views.order, name='order'),
+
 
 
 ]

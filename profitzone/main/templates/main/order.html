@@ -6,56 +6,6 @@
 {% endblock %}
 
 {% block content %}
-<style>
-
-    input.form-control {
-        padding: 10px; /* Убедитесь, что padding правильный */
-        margin-left: 0; /* Убирает сдвиг влево */
-        margin-right: 0; /* Убирает сдвиг вправо */
-        width: 100%; /* Занимает всю доступную ширину */
-        box-sizing: border-box; /* Учет всех границ и отступов */
-    }
-    .form-control {
-        padding: 10px;
-        margin: 0;
-        width: 100%;
-        box-sizing: border-box;
-    }
-
-    input[type="text"], input[type="tel"] {
-        display: block;
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #ccc;
-        box-sizing: border-box;
-        text-align: center;
-    }
-
-    ::placeholder { 
-        color: #888; 
-        opacity: 1;
-    }
-
-    :-ms-input-placeholder { /* IE 10-11 */
-        color: #888;
-    }
-
-    ::-ms-input-placeholder { /* Microsoft Edge */
-        color: #888;
-    }
-
-    .container {
-        max-width: 100%;
-        margin: 0 auto;
-        padding: 0 15px;
-        box-sizing: border-box;
-    }
-
-    .card {
-        margin-bottom: 20px;
-    }
-</style>
-
 <div class="container my-5">
     <h1 class="mb-4 text-center">Оформление заказа</h1>
 
@@ -138,22 +88,17 @@ $(document).ready(function() {
         }
     });
 
-    // Принудительная перерисовка полей
-    setTimeout(function() {
-        $("#address, #phone-number").css('display', 'none').css('display', 'block');
-    }, 100);
-
     // Обработчик переключения "Самовывоз"
-    document.getElementById('pickup-option').addEventListener('change', function () {
-        const addressFields = document.getElementById('address-fields');
+    $('#pickup-option').on('change', function () {
+        const addressFields = $('#address-fields');
         if (this.checked) {
-            addressFields.style.display = 'none';
+            addressFields.hide(); // Скрываем поля адреса
+            $('#checkout-form').submit(); // Автоматически отправляем форму
         } else {
-            addressFields.style.display = 'block';
+            addressFields.show(); // Показываем поля адреса
         }
     });
 });
-
 </script>
 
 {% endblock %}

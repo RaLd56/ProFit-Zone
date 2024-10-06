@@ -52,8 +52,6 @@ def homepage(request):
 def catalogue(request):
     return render(request, 'main/catalogue.html')
 
-def cart(request):
-    return render(request, 'main/cart.html')
 
 def product_card(request, id):
     product = Product.objects.get(id=id)
@@ -105,9 +103,10 @@ def add_to_cart(request):
         return JsonResponse({'status': 'error', 'message': 'Product does not exist'}, status=404)
 
     cart, created = Cart.objects.get_or_create(user=request.user)
+    print(cart)
 
     cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
-
+    print(cart_item)
     if not created:
         cart_item.quantity += quantity
     else:
@@ -118,7 +117,7 @@ def add_to_cart(request):
     return JsonResponse({'status': 'success', 'message': 'Product added to cart', 'cart_quantity': cart_item.quantity})
 
 def cart(request):
-    cart = Cart.objects.get(user=request.user)
+    cart, created = Cart.objects.get_or_create(user=request.user)
     return render(request, 'main/cart.html', {'cart':cart})
 def swedish_walls(request):
     login_form = LoginForm()
@@ -346,7 +345,29 @@ def lifting(request):
 @login_required
 def order(request):
     cart = Cart.objects.get(user=request.user)
+    
     if request.method == 'POST':
+        # Проверяем, выбран ли самовывоз
+        if 'pickup' in request.POST:
+            # Если самовывоз, сразу переходим к оплате
+            value = cart.get_total_price()
+            payment = Payment.create({
+                "amount": {
+                    "value": value,
+                    "currency": "RUB"
+                },
+                "confirmation": {
+                    "type": "redirect",
+                    "return_url": "http://127.0.0.1:8000/cart"
+                },
+                "capture": True,
+                "description": "Заказ №1"
+            }, uuid.uuid4())
+            confirmation_url = payment.confirmation.confirmation_url
+            cart.delete()
+            return redirect(confirmation_url)
+        
+        # Если самовывоз не выбран, продолжаем с обработкой адреса
         token = dadata_token
         secret = dadata_secret
         dadata = Dadata(token, secret)
@@ -359,21 +380,20 @@ def order(request):
                 print(found_address)
                 value = cart.get_total_price()
                 payment = Payment.create({
-                "amount": {
-                    "value": value,
-                    "currency": "RUB"
-                },
-                "confirmation": {
-                    "type": "redirect",
-                    "return_url": "http://127.0.0.1:8000/cart"
-                },
-                "capture": True,
-                "description": "Заказ №1"
+                    "amount": {
+                        "value": value,
+                        "currency": "RUB"
+                    },
+                    "confirmation": {
+                        "type": "redirect",
+                        "return_url": "http://127.0.0.1:8000/cart"
+                    },
+                    "capture": True,
+                    "description": "Заказ №1"
                 }, uuid.uuid4())
                 confirmation_url = payment.confirmation.confirmation_url
-
+                cart.delete()
                 return redirect(confirmation_url)
-
 
             else:  # Адрес не найден
                 error_message = "Такого адреса нет"
@@ -382,10 +402,10 @@ def order(request):
                     'error_message': error_message
                 })
         except Exception as e:
-                print(f"Ошибка при обращении к Dadata API: {e}")
-                error_message = "Ошибка при обработке адреса"
-                return render(request, 'main/order.html', {
-                    'error_message': error_message
-                })
+            print(f"Ошибка при обращении к Dadata API: {e}")
+            error_message = "Ошибка при обработке адреса"
+            return render(request, 'main/order.html', {
+                'error_message': error_message
+            })
 
     return render(request, 'main/order.html', {'cart': cart})

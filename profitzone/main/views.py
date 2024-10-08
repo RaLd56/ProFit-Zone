@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
 from .forms import LoginForm, RegisterForm
-from .models import SwedishWall, HorizontalBar, Nutrition, WeightliftingProduct, Product, Cart, CartItem, FitnessProduct
+from .models import SwedishWall, HorizontalBar, Nutrition, WeightliftingProduct, Product, Cart, CartItem, FitnessProduct, BarbellRack, MartialArtsProduct
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 import uuid
@@ -77,6 +77,10 @@ def catalogue(request):
             products = WeightliftingProduct.objects.all()
         elif category == 'Фитнес':
             products = FitnessProduct.objects.all()
+        elif category == 'Стойки для штанг':
+            products = BarbellRack.objects.all()
+        elif category == 'Единоборства':
+            products = MartialArtsProduct.objects.all()
         else:
             products = Product.objects.all()  
     else:
@@ -112,11 +116,13 @@ def catalogue(request):
 
 
 def product_card(request, id):
+    login_form = LoginForm()
+    register_form = RegisterForm()
     product = Product.objects.get(id=id)
     product.popularity += 1
     product.save()
     product = get_object_or_404(Product, id=id)
-    return render(request, 'main/product_card.html', {'product': product})
+    return render(request, 'main/product_card.html', {'product': product, 'login_form': login_form, 'register_form': register_form})
 
 @require_POST
 def update_quantity(request):
@@ -400,16 +406,180 @@ def lifting(request):
 
     return render(request, 'main/lifting.html', context)
 
+def racks(request):
+    login_form = LoginForm()
+    register_form = RegisterForm()
+    ADJUSTABLE_MAP = {
+        'Да': True,
+        'Нет': False,
+    }
+    
+
+
+    sort_by = request.GET.get('sort_by', 'popularity')
+    min_price = request.GET.get('min_price', 7990)
+    max_price = request.GET.get('max_price', 25990)
+    weight = request.GET.get('weight')
+    adjustable = request.GET.get('adjustable')
+    print(adjustable)
+
+    selected_adjustability = ADJUSTABLE_MAP.get(adjustable)
+
+    racks = BarbellRack.objects.filter(price__gte=min_price, price__lte=max_price)
+    
+
+
+    if adjustable == 'Неважно' or adjustable == None:
+        pass
+    else:
+        racks = racks.filter(adjustable=selected_adjustability)
+        
+
+    if weight == 'Любой' or weight == None:
+        pass
+    else:
+        racks = racks.filter(max_load=weight)
+
+    # Сортируем товары
+    if sort_by == 'price':
+        racks = racks.order_by('price')
+    else:
+        racks = racks.order_by('-popularity')
+
+    print(adjustable)
+    context = {
+        'racks_sort': racks,
+        'sort_by': sort_by,
+        'min_price': min_price,
+        'max_price': max_price,
+        'adjustable': adjustable,
+        'weight': weight,
+        'login_form': login_form,
+        'register_form': register_form,
+    }
+
+    # Если это AJAX-запрос, возвращаем только часть с товарами
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return render(request, 'main/includes/racks_list.html', context)
+
+    return render(request, 'main/racks.html', context)
+
+def fitness(request):
+    login_form = LoginForm()
+    register_form = RegisterForm()
+
+    
+
+
+    sort_by = request.GET.get('sort_by', 'popularity')
+    min_price = request.GET.get('min_price', 500)
+    max_price = request.GET.get('max_price', 3990)
+    category = request.GET.get('category')
+
+
+    product = FitnessProduct.objects.filter(price__gte=min_price, price__lte=max_price)
+    
+
+
+    if category == 'Любая категория' or category == None:
+        pass
+    else:
+        product = product.filter(category=category)
+        
+
+    # Сортируем товары
+    if sort_by == 'price':
+        product = product.order_by('price')
+    else:
+        product = product.order_by('-popularity')
+
+    context = {
+        'fitness_sort': product,
+        'sort_by': sort_by,
+        'min_price': min_price,
+        'max_price': max_price,
+        'login_form': login_form,
+        'register_form': register_form,
+        'category': category
+    }
+
+    # Если это AJAX-запрос, возвращаем только часть с товарами
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return render(request, 'main/includes/fitness_list.html', context)
+
+    return render(request, 'main/fitness.html', context)
+
+def martial_arts(request):
+    login_form = LoginForm()
+    register_form = RegisterForm()
+
+    # Словарь для сопоставления русских названий категорий с внутренними значениями модели
+    CATEGORY_CHOICES = {
+        'Перчатки': 'gloves',
+        'Шлем': 'helmet',
+        'Форма': 'uniform',
+        'Груша': 'bag',
+        'Защита': 'protector',
+        'Любая категория': None
+    }
+
+    # Получение параметров запроса
+    sort_by = request.GET.get('sort_by', 'popularity')
+    min_price = request.GET.get('min_price', 4890)
+    max_price = request.GET.get('max_price', 11000)
+    category = request.GET.get('category', 'Любая категория')
+
+    # Преобразуем русское значение категории в внутреннее значение модели
+    category_value = CATEGORY_CHOICES.get(category)
+
+    # Фильтрация по цене
+    products = MartialArtsProduct.objects.filter(price__gte=min_price, price__lte=max_price)
+    
+    if category_value == 'Любая категория' or category_value == None:
+        print('huy')
+        pass
+    else:
+        print(category)
+        products = products.filter(category=category_value)
+
+
+    # Сортируем товары
+    if sort_by == 'price':
+        products = products.order_by('price')
+    else:
+        products = products.order_by('-popularity')
+
+    context = {
+        'products_sort': products,
+        'sort_by': sort_by,
+        'min_price': min_price,
+        'max_price': max_price,
+        'login_form': login_form,
+        'register_form': register_form,
+        'category': category,  # Добавляем категорию для отображения в шаблоне
+    }
+    print(category)
+
+    # Если это AJAX-запрос, возвращаем только часть с товарами
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return render(request, 'main/includes/martial_arts_list.html', context)
+
+    # Возвращаем полный рендер
+    return render(request, 'main/martial_arts.html', context)
+
 
 @login_required
 def order(request):
     cart = Cart.objects.get(user=request.user)
+    delivery_price = 500
     
     if request.method == 'POST':
         # Проверяем, выбран ли самовывоз
         if 'pickup' in request.POST:
             # Если самовывоз, сразу переходим к оплате
-            value = cart.get_total_price()
+            value = cart.get_total_price() + delivery_price
+            if value >= 3000:
+                value = cart.get_total_price()
             payment = Payment.create({
                 "amount": {
                     "value": value,
@@ -436,7 +606,9 @@ def order(request):
             if result.get('qc') == 0: 
                 found_address = result.get('result')
                 print(found_address)
-                value = cart.get_total_price()
+                value = cart.get_total_price() + delivery_price
+                if value >= 3000:
+                    value = cart.get_total_price()
                 payment = Payment.create({
                     "amount": {
                         "value": value,
@@ -456,13 +628,18 @@ def order(request):
                 error_message = "Такого адреса нет"
                 print(error_message)
                 return render(request, 'main/order.html', {
-                    'error_message': error_message
+                    'error_message': error_message, 'delivery_price': delivery_price
                 })
         except Exception as e:
             print(f"Ошибка при обращении к Dadata API: {e}")
             error_message = "Ошибка при обработке адреса"
             return render(request, 'main/order.html', {
-                'error_message': error_message
+                'error_message': error_message, 'delivery_price': delivery_price
             })
+    return render(request, 'main/order.html', {'cart': cart, 'delivery_price': delivery_price})
 
-    return render(request, 'main/order.html', {'cart': cart})
+def about(request):
+    return render(request, 'main/about.html')
+
+def contacts(request):
+    return render(request, 'main/contacts.html')

@@ -1,0 +1,11 @@
+
+{% for rack in racks_sort %}
+<a style="text-decoration: none;" href="{% url 'product_card' rack.id %}">
+<div class="product-card">
+    <img src="{{ rack.img.url }}" alt="{{ rack.name }}">
+    <h4>{{ rack.name }}</h4>
+    <p class="price">{{ rack.price }}</p>
+    <button class="add-to-cart-btn">В корзину</button>
+</div>
+</a>
+{% endfor %}

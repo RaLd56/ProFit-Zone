@@ -2,13 +2,13 @@
 {% load static %}
 
 {% block title %}
-Каталог
+Фитнес
 {% endblock %}
 
 {% block content %}
 <section class="product-section">
     <div class="container">
-        <h1>Все товары</h1>
+        <h1>спортивное питание</h1>
         <div class="product-layout">
             <!-- Фильтры -->
             <aside class="filters">
@@ -21,11 +21,11 @@
 
                 <h3>Цена</h3>
                 <div class="price-slider-container">
-                    <input type="range" id="minPriceRange" min="0" max="38990" value="{{ request.GET.min_price|default:0 }}" class="price-range" name="min_price">
-                    <input type="range" id="maxPriceRange" min="0" max="38990" value="{{ request.GET.max_price|default:38990 }}" class="price-range" name="max_price">
+                    <input type="range" id="minPriceRange" min="500" max="3200" value="{{ request.GET.min_price|default:500 }}" class="price-range" name="min_price">
+                    <input type="range" id="maxPriceRange" min="500" max="3200" value="{{ request.GET.max_price|default:3200 }}" class="price-range" name="max_price">
                 </div>
                 <div class="price-range-display">
-                    <span id="priceMinDisplay">от {{ request.GET.min_price|default:0 }}</span> - <span id="priceMaxDisplay">до {{ request.GET.max_price|default:38990 }}</span> ₽
+                    <span id="priceMinDisplay">от {{ request.GET.min_price|default:500 }}</span> - <span id="priceMaxDisplay">до {{ request.GET.max_price|default:3200 }}</span> ₽
                 </div>
 
                 <script>
@@ -106,17 +106,13 @@
 
                 <h3>Категория</h3>
                 <ul>
-                    <li><input type="radio" id="lifting" name="category" value="Тяжелая атлетика" {% if 'Тяжелая атлетика' in category %}checked{% endif %}> <label for="barbells">Тяжелая атлетика</label></li>
-                    <li><input type="radio" id="horizontal_bars" name="category" value="Турники" {% if 'Турники' in category %}checked{% endif %}> <label for="dumbells">Турники</label></li>                    
-                    <li><input type="radio" id="swedish_walls" name="category" value="Шведские стенки" {% if 'Шведские стенки' in category %}checked{% endif %}> <label for="belts">Шведские стенки</label></li>
-                    <li><input type="radio" id="nutrition" name="category" value="Спортивное питание" {% if 'Спортивное питание' in category %}checked{% endif %}> <label for="belts">Спортивное питание</label></li>
-                    <li><input type="radio" id="fitness" name="category" value="Фитнес" {% if 'Фитнес' in category %}checked{% endif %}> <label for="belts">Фитнес</label></li>
-                    <li><input type="radio" id="fighting" name="category" value="Единоборства" {% if 'Единоборства' in category %}checked{% endif %}> <label for="belts">Единоборства</label></li>
-                    <li><input type="radio" id="racks" name="category" value="Стойки для штанг" {% if 'Стойки для штанг' in category %}checked{% endif %}> <label for="belts">Стойки для штанг</label></li>
-                    <li><input type="radio" id="all" name="category" value="Любая категория" {% if category %}{% else %}checked{% endif %}{% if 'Все категории' in category %}checked{% endif %}> <label for="all">Все категории</label></li>
+                    <li><input type="radio" id="rehab" name="category" value="Реабилитация" {% if 'Реабилитация' in category %}checked{% endif %}> <label for="protein">Реабилитация</label></li>
+                    <li><input type="radio" id="func" name="category" value="Функциональный тренинг" {% if 'Функциональный тренинг' in category %}checked{% endif %}> <label for="gainer">Функциональный тренинг</label></li>                    
+                    <li><input type="radio" id="cardio" name="category" value="Кардио" {% if 'Кардио' in category %}checked{% endif %}> <label for="black">Кардио</label></li>
+                    <li><input type="radio" id="yoga" name="category" value="Йога" {% if 'Йога' in category %}checked{% endif %}> <label for="black">Йога</label></li>
+                    <li><input type="radio" id="all" name="category" value="Любая категория" {% if category %}{% else %}checked{% endif %}{% if 'Любая категория' in category %}checked{% endif %}> <label for="all">Все категории</label></li>
 
                 </ul>
-
 
             </aside>
 
@@ -124,7 +120,7 @@
             <div class="products">
 
                 <div class="product-grid">
-                    {% for product in products_sort %}
+                    {% for product in fitness_sort %}
                     <a style="text-decoration: none;" href="{% url 'product_card' product.id %}">
                     <div class="product-card">
                         <img src="{{ product.img.url }}" alt="{{ product.name }}">
@@ -156,7 +152,7 @@
         });
 
         // Асинхронно загружаем товары
-        fetch(`/catalogue/?${params.toString()}`, {
+        fetch(`/fitness/?${params.toString()}`, {
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
         })
         .then(response => response.text())
@@ -171,10 +167,15 @@
     document.getElementById('minPriceRange').addEventListener('input', applyFiltersAndSort);
     document.getElementById('maxPriceRange').addEventListener('input', applyFiltersAndSort);
 
+    document.querySelectorAll('input[name="flavour"]').forEach(radio => {
+        radio.addEventListener('change', applyFiltersAndSort);
+    });
+
     document.querySelectorAll('input[name="category"]').forEach(radio => {
         radio.addEventListener('change', applyFiltersAndSort);
     });
 
+    // Поддержка кнопок "Назад" и "Вперёд"
     window.addEventListener('popstate', function() {
         applyFiltersAndSort();
     });

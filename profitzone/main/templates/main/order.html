@@ -25,8 +25,14 @@
                 
                 <!-- Адрес доставки -->
                 <div id="address-fields">
-                    <div class="mb-3">
+                    <div class="huy">
                         <label for="address" class="form-label">Адрес доставки</label>
+                        <style>
+                            .form-control {
+                                padding-left: 12px !important;
+                            }
+                        </style>
+                        
                         <input type="text" class="form-control" id="address" name="address" placeholder="Улица, дом, квартира" required>
                     </div>
                     <div class="mb-3">
@@ -59,7 +65,8 @@
                         {% endfor %}
                     </tbody>
                 </table>
-                <h4 class="text-end">Итого: <strong>{{ cart.get_total_price }} ₽</strong></h4>
+                <h4 class="text-end">Доставка: <strong>{{ delivery_price }} ₽</strong></h4>
+                <h4 class="text-end">Стоимость: <strong>{{ cart.get_total_price }} ₽</strong></h4>
             </div>
         </div>
 

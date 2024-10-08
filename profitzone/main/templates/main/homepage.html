@@ -20,7 +20,7 @@ ProFit Zone
                 <div class="banner small-banner" style="background-image: url('{% static 'main/img/banner2-small-background.jpeg' %}')">
                     <h2>Новинки оборудования</h2>
                     <p>Новые тренажёры и аксессуары для фитнеса.</p>
-                    <a href="{% url 'lifting' %}" class="btn">Узнать больше</a>
+                    <a href="{% url 'lifting' %}" class="btn">Купить</a>
                 </div>
             </div>
         </section>        
@@ -127,22 +127,30 @@ ProFit Zone
                         <p>Тяжелая атлетика</p>
                     </div>
                     </a>
+                    <a style="text-decoration: none;" href="{% url 'racks' %}">
                     <div class="catalogue-item">
                         <img src="{% static 'main/img/bench.png' %}" alt="Стойки под штангу">
                         <p>Стойки под штангу</p>
                     </div>
+                    </a>
+                    <a style="text-decoration: none;" href="{% url 'martial_arts' %}">
                     <div class="catalogue-item">
                         <img src="{% static 'main/img/glowes-1.png' %}" alt="Единоборства">
                         <p>Единоборства</p>
                     </div>
+                    </a>
+                    <a style="text-decoration: none;" href="{% url 'fitness' %}">
                     <div class="catalogue-item">
                         <img src="{% static 'main/img/fitness-rubber-1.png' %}" alt="Фитнес">
                         <p>Фитнес</p>
                     </div>
+                    </a>
+                    <a style="text-decoration: none;" href="{% url 'catalogue' %}">
                     <div class="catalogue-item">
                         <img src="{% static 'main/img/dumbbels-1.png' %}" alt="Весь каталог">
                         <p>Весь каталог</p>
                     </div>
+                    </a>
                 </div>
             </div>
         </section>

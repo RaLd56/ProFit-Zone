@@ -87,3 +87,32 @@ class FitnessProduct(Product):
     
     def __str__(self):
         return self.name
+    
+class BarbellRack(Product):
+    # Поля, специфичные для стоек для штанги
+    max_load = models.IntegerField(help_text="Максимальная нагрузка в кг")
+    height = models.DecimalField(max_digits=5, decimal_places=2, help_text="Высота стойки в метрах")
+    adjustable = models.BooleanField(default=False, help_text="Регулируемая высота")
+
+
+    def __str__(self):
+        return f"{self.name} (Стойка для штанги)"
+
+class MartialArtsProduct(Product):
+    EQUIPMENT_CHOICES = [
+        ('gloves', 'Перчатки'),
+        ('helmet', 'Шлем'),
+        ('uniform', 'Форма'),
+        ('bag', 'Мешок для бокса'),
+        ('protector', 'Защита'),
+    ]
+
+    category = models.CharField(max_length=50, choices=EQUIPMENT_CHOICES, help_text="Тип снаряжения")
+    material = models.CharField(max_length=100, help_text="Материал снаряжения", blank=True, null=True)
+
+    class Meta:
+        verbose_name = "Товар для единоборств"
+        verbose_name_plural = "Товары для единоборств"
+
+    def __str__(self):
+        return f"{self.name} (Товар для единоборств)"

@@ -1,0 +1,121 @@
+{% extends 'main/layout.html' %}
+{% load static %}
+
+{% block title %}
+О нас 
+{% endblock %}
+
+{% block content %}
+<section class="contacts-section">
+    <div class="container">
+        <h1 class="contacts-title">Контакты</h1>
+        <div class="contacts-content">
+            <p>Мы всегда на связи и готовы ответить на все ваши вопросы! Ниже вы найдёте всю необходимую информацию для связи с нами. Не стесняйтесь обращаться — наш дружелюбный коллектив всегда рад помочь вам!</p>
+            
+            <div class="contact-details">
+                <h2>Наши контакты</h2>
+                <ul>
+                    <li><strong>Телефон:</strong> <a href="tel:+78001234567">+7 (800) 123-45-67</a></li>
+                    <li><strong>Email:</strong> <a href="mailto:info@fitshop.ru">info@fitshop.ru</a></li>
+                    <li><strong>Адрес:</strong> г. Москва, ул. Спортивная, д. 10, офис 101</li>
+                    <li><strong>Часы работы:</strong> Пн-Пт: 9:00 - 20:00, Сб-Вс: 10:00 - 18:00</li>
+                </ul>
+            </div>
+
+            <div class="contact-map">
+                <h2>Мы на карте</h2>
+                <p>Наш офис удобно расположен в центре города. Вы можете легко найти нас на карте ниже:</p>
+                <!-- Вставка карты (например, Google Maps или Яндекс.Карты) -->
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2244.609529215771!2d37.617498215930946!3d55.75582628055561!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x46b54a5b4d9cd1e5%3A0x24017ebcdb4b7a0!2z0JzQvtGB0LrQstCwLCAxLCDQnNC-0YHQutCy0LAsINCa0L7QstCw0YLRjCwgMTAzMDE1!5e0!3m2!1sru!2sru!4v1634136091234!5m2!1sru!2sru" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+            </div>
+
+            <div class="contact-form">
+                <h2>Свяжитесь с нами</h2>
+                <p>Заполните форму ниже, и мы ответим вам в кратчайшие сроки:</p>
+                <form action="#" method="post">
+                    <label for="name">Ваше имя</label>
+                    <input type="text" id="name" name="name" required>
+
+                    <label for="email">Ваш Email</label>
+                    <input type="email" id="email" name="email" required>
+
+                    <label for="message">Сообщение</label>
+                    <textarea id="message" name="message" rows="5" required></textarea>
+
+                    <button type="submit" class="submit-btn">Отправить сообщение</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .contacts-section {
+        padding: 40px 0;
+    }
+    .contacts-title {
+        font-size: 36px;
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    .contacts-content p {
+        font-size: 18px;
+        line-height: 1.6;
+        margin-bottom: 20px;
+    }
+    .contact-details ul {
+        list-style: none;
+        padding: 0;
+        margin-bottom: 30px;
+    }
+    .contact-details ul li {
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+    .contact-details ul li a {
+        color: #007bff;
+        text-decoration: none;
+    }
+    .contact-details ul li a:hover {
+        text-decoration: underline;
+    }
+    .contact-map {
+        margin-bottom: 30px;
+        text-align: center;
+    }
+    .contact-form {
+        max-width: 600px;
+        margin: 0 auto;
+        margin-bottom: 30px;
+    }
+    .contact-form form {
+        display: flex;
+        flex-direction: column;
+    }
+    .contact-form form label {
+        margin-bottom: 5px;
+        font-size: 16px;
+    }
+    .contact-form form input,
+    .contact-form form textarea {
+        margin-bottom: 15px;
+        padding: 10px;
+        font-size: 16px;
+        width: 100%;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    .submit-btn {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+    .submit-btn:hover {
+        background-color: #0056b3;
+    }
+</style>
+{% endblock %}

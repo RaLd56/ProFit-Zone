@@ -2,13 +2,13 @@
 {% load static %}
 
 {% block title %}
-Каталог
+Стойки для штанги
 {% endblock %}
 
 {% block content %}
 <section class="product-section">
     <div class="container">
-        <h1>Все товары</h1>
+        <h1>Стойки для штанги</h1>
         <div class="product-layout">
             <!-- Фильтры -->
             <aside class="filters">
@@ -21,11 +21,11 @@
 
                 <h3>Цена</h3>
                 <div class="price-slider-container">
-                    <input type="range" id="minPriceRange" min="0" max="38990" value="{{ request.GET.min_price|default:0 }}" class="price-range" name="min_price">
-                    <input type="range" id="maxPriceRange" min="0" max="38990" value="{{ request.GET.max_price|default:38990 }}" class="price-range" name="max_price">
+                    <input type="range" id="minPriceRange" min="7990" max="25990" value="{{ request.GET.min_price|default:7990 }}" class="price-range" name="min_price">
+                    <input type="range" id="maxPriceRange" min="7990" max="25990" value="{{ request.GET.max_price|default:25990 }}" class="price-range" name="max_price">
                 </div>
                 <div class="price-range-display">
-                    <span id="priceMinDisplay">от {{ request.GET.min_price|default:0 }}</span> - <span id="priceMaxDisplay">до {{ request.GET.max_price|default:38990 }}</span> ₽
+                    <span id="priceMinDisplay">от {{ request.GET.min_price|default:7990 }}</span> - <span id="priceMaxDisplay">до {{ request.GET.max_price|default:25990 }}</span> ₽
                 </div>
 
                 <script>
@@ -104,19 +104,23 @@
                     }
                 </style>
 
-                <h3>Категория</h3>
+                <h3>Регулируется</h3>
                 <ul>
-                    <li><input type="radio" id="lifting" name="category" value="Тяжелая атлетика" {% if 'Тяжелая атлетика' in category %}checked{% endif %}> <label for="barbells">Тяжелая атлетика</label></li>
-                    <li><input type="radio" id="horizontal_bars" name="category" value="Турники" {% if 'Турники' in category %}checked{% endif %}> <label for="dumbells">Турники</label></li>                    
-                    <li><input type="radio" id="swedish_walls" name="category" value="Шведские стенки" {% if 'Шведские стенки' in category %}checked{% endif %}> <label for="belts">Шведские стенки</label></li>
-                    <li><input type="radio" id="nutrition" name="category" value="Спортивное питание" {% if 'Спортивное питание' in category %}checked{% endif %}> <label for="belts">Спортивное питание</label></li>
-                    <li><input type="radio" id="fitness" name="category" value="Фитнес" {% if 'Фитнес' in category %}checked{% endif %}> <label for="belts">Фитнес</label></li>
-                    <li><input type="radio" id="fighting" name="category" value="Единоборства" {% if 'Единоборства' in category %}checked{% endif %}> <label for="belts">Единоборства</label></li>
-                    <li><input type="radio" id="racks" name="category" value="Стойки для штанг" {% if 'Стойки для штанг' in category %}checked{% endif %}> <label for="belts">Стойки для штанг</label></li>
-                    <li><input type="radio" id="all" name="category" value="Любая категория" {% if category %}{% else %}checked{% endif %}{% if 'Все категории' in category %}checked{% endif %}> <label for="all">Все категории</label></li>
+                    <li><input type="radio" id="adjustable" name="adjustable" value="True" {% if 'Да' in adjustable %}checked{% endif %}> <label for="adjustable">Да</label></li>
+                    <li><input type="radio" id="nonadjustable" name="adjustable" value="False" {% if 'Нет' in adjustable %}checked{% endif %}> <label for="nonadjustable">Нет</label></li>                    
+                    <li><input type="radio" id="all" name="adjustable" value="Неважно" {% if adjustable %}{% else %}checked{% endif %}{% if 'Неважно' in adjustable %}checked{% endif %}> <label for="all">Все категории</label></li>
 
                 </ul>
 
+                <h3>Вес</h3>
+                <ul>
+                    <li><input type="radio" id="100kg" name="weight" value="100" {% if '100' in weight %}checked{% endif %}> <label for="100kg">до 100 кг</label></li>
+                    <li><input type="radio" id="120kg" name="weight" value="120" {% if '120' in weight %}checked{% endif %}> <label for="120kg">до 120 кг</label></li>
+                    <li><input type="radio" id="150kg" name="weight" value="150" {% if '150' in weight %}checked{% endif %}> <label for="150kg">до 150 кг</label></li>
+                    <li><input type="radio" id="200kg" name="weight" value="200" {% if '200' in weight %}checked{% endif %}> <label for="200kg">до 200 кг</label></li>
+                    <li><input type="radio" id="300kg" name="weight" value="300" {% if '300' in weight %}checked{% endif %}> <label for="300kg">до 300 кг</label></li>
+                    <li><input type="radio" id="all" name="weight" value="Любой" {% if weight %}{% else %}checked{% endif %}{% if 'Любой' in weight %}checked{% endif %}> <label for="all">Неважно</label></li>
+                </ul>
 
             </aside>
 
@@ -124,12 +128,12 @@
             <div class="products">
 
                 <div class="product-grid">
-                    {% for product in products_sort %}
-                    <a style="text-decoration: none;" href="{% url 'product_card' product.id %}">
+                    {% for rack in racks_sort %}
+                    <a style="text-decoration: none;" href="{% url 'product_card' rack.id %}">
                     <div class="product-card">
-                        <img src="{{ product.img.url }}" alt="{{ product.name }}">
-                        <h4>{{ product.name }}</h4>
-                        <p class="price">{{ product.price }}</p>
+                        <img src="{{ rack.img.url }}" alt="{{ rack.name }}">
+                        <h4>{{ rack.name }}</h4>
+                        <p class="price">{{ rack.price }}</p>
                         <button class="add-to-cart-btn">Купить</button>
                     </div>
                     </a>
@@ -145,18 +149,22 @@
         const sortBy = document.getElementById('sortSelect').value;
         const minPrice = document.getElementById('minPriceRange').value;
         const maxPrice = document.getElementById('maxPriceRange').value;
-        const category = document.querySelector('input[name="category"]:checked')?.value || '';
+        const adjustable = document.querySelector('input[name="adjustable"]:checked')?.value || '';
+        const weight = document.querySelector('input[name="weight"]:checked')?.value || '';
 
+        console.log('huy')
+        console.log(adjustable)
         // Формируем параметры для GET-запроса
         const params = new URLSearchParams({
             sort_by: sortBy,
             min_price: minPrice,
             max_price: maxPrice,
-            category: category,
+            adjustable: adjustable,
+            weight: weight,
         });
 
         // Асинхронно загружаем товары
-        fetch(`/catalogue/?${params.toString()}`, {
+        fetch(`/racks/?${params.toString()}`, {
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
         })
         .then(response => response.text())
@@ -171,10 +179,15 @@
     document.getElementById('minPriceRange').addEventListener('input', applyFiltersAndSort);
     document.getElementById('maxPriceRange').addEventListener('input', applyFiltersAndSort);
 
-    document.querySelectorAll('input[name="category"]').forEach(radio => {
+    document.querySelectorAll('input[name="adjustable"]').forEach(radio => {
         radio.addEventListener('change', applyFiltersAndSort);
     });
 
+    document.querySelectorAll('input[name="weight"]').forEach(radio => {
+        radio.addEventListener('change', applyFiltersAndSort);
+    });
+
+    // Поддержка кнопок "Назад" и "Вперёд"
     window.addEventListener('popstate', function() {
         applyFiltersAndSort();
     });

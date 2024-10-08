@@ -2,13 +2,13 @@
 {% load static %}
 
 {% block title %}
-Каталог
+Единоборства
 {% endblock %}
 
 {% block content %}
 <section class="product-section">
     <div class="container">
-        <h1>Все товары</h1>
+        <h1>Единоборства</h1>
         <div class="product-layout">
             <!-- Фильтры -->
             <aside class="filters">
@@ -21,11 +21,11 @@
 
                 <h3>Цена</h3>
                 <div class="price-slider-container">
-                    <input type="range" id="minPriceRange" min="0" max="38990" value="{{ request.GET.min_price|default:0 }}" class="price-range" name="min_price">
-                    <input type="range" id="maxPriceRange" min="0" max="38990" value="{{ request.GET.max_price|default:38990 }}" class="price-range" name="max_price">
+                    <input type="range" id="minPriceRange" min="4899" max="11000" value="{{ request.GET.min_price|default:4899 }}" class="price-range" name="min_price">
+                    <input type="range" id="maxPriceRange" min="4899" max="11000" value="{{ request.GET.max_price|default:11000 }}" class="price-range" name="max_price">
                 </div>
                 <div class="price-range-display">
-                    <span id="priceMinDisplay">от {{ request.GET.min_price|default:0 }}</span> - <span id="priceMaxDisplay">до {{ request.GET.max_price|default:38990 }}</span> ₽
+                    <span id="priceMinDisplay">от {{ request.GET.min_price|default:4899 }}</span> - <span id="priceMaxDisplay">до {{ request.GET.max_price|default:11000 }}</span> ₽
                 </div>
 
                 <script>
@@ -104,19 +104,16 @@
                     }
                 </style>
 
-                <h3>Категория</h3>
-                <ul>
-                    <li><input type="radio" id="lifting" name="category" value="Тяжелая атлетика" {% if 'Тяжелая атлетика' in category %}checked{% endif %}> <label for="barbells">Тяжелая атлетика</label></li>
-                    <li><input type="radio" id="horizontal_bars" name="category" value="Турники" {% if 'Турники' in category %}checked{% endif %}> <label for="dumbells">Турники</label></li>                    
-                    <li><input type="radio" id="swedish_walls" name="category" value="Шведские стенки" {% if 'Шведские стенки' in category %}checked{% endif %}> <label for="belts">Шведские стенки</label></li>
-                    <li><input type="radio" id="nutrition" name="category" value="Спортивное питание" {% if 'Спортивное питание' in category %}checked{% endif %}> <label for="belts">Спортивное питание</label></li>
-                    <li><input type="radio" id="fitness" name="category" value="Фитнес" {% if 'Фитнес' in category %}checked{% endif %}> <label for="belts">Фитнес</label></li>
-                    <li><input type="radio" id="fighting" name="category" value="Единоборства" {% if 'Единоборства' in category %}checked{% endif %}> <label for="belts">Единоборства</label></li>
-                    <li><input type="radio" id="racks" name="category" value="Стойки для штанг" {% if 'Стойки для штанг' in category %}checked{% endif %}> <label for="belts">Стойки для штанг</label></li>
-                    <li><input type="radio" id="all" name="category" value="Любая категория" {% if category %}{% else %}checked{% endif %}{% if 'Все категории' in category %}checked{% endif %}> <label for="all">Все категории</label></li>
+<h3>Категория</h3>
+<ul>
+    <li><input type="radio" id="glowes" name="category" value="Перчатки" {% if 'Перчатки' in category %}checked{% endif %}> <label for="glowes">Перчатки</label></li>
+    <li><input type="radio" id="helmet" name="category" value="Шлем" {% if 'Шлем' in category %}checked{% endif %}> <label for="helmet">Шлем</label></li>                    
+    <li><input type="radio" id="bag" name="category" value="Груша" {% if 'Груша' in category %}checked{% endif %}> <label for="bag">Груша</label></li>
+    <li><input type="radio" id="protector" name="category" value="Защита" {% if 'Защита' in category %}checked{% endif %}> <label for="protector">Защита</label></li>
+    <li><input type="radio" id="uniform" name="category" value="Форма" {% if 'Форма' in category %}checked{% endif %}> <label for="uniform">Форма</label></li>
+    <li><input type="radio" id="all" name="category" value="Любая категория" {% if category %}{% else %}checked{% endif %}{% if 'Любая категория' in category %}checked{% endif %}> <label for="all">Все категории</label></li>
 
-                </ul>
-
+</ul>
 
             </aside>
 
@@ -156,7 +153,7 @@
         });
 
         // Асинхронно загружаем товары
-        fetch(`/catalogue/?${params.toString()}`, {
+        fetch(`/martial_arts/?${params.toString()}`, {
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
         })
         .then(response => response.text())
@@ -175,6 +172,7 @@
         radio.addEventListener('change', applyFiltersAndSort);
     });
 
+    // Поддержка кнопок "Назад" и "Вперёд"
     window.addEventListener('popstate', function() {
         applyFiltersAndSort();
     });

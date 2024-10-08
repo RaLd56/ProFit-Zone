@@ -1,0 +1,10 @@
+{% for product in fitness_sort %}
+<a style="text-decoration: none;" href="{% url 'product_card' product.id %}">
+    <div class="product-card">
+        <img src="{{ product.img.url }}" alt="{{ product.name }}">
+        <h4>{{ product.name }}</h4>
+        <p class="price">{{ product.price }}</p>
+        <button class="add-to-cart-btn">Купить</button>
+    </div>
+    </a>
+{% endfor %}

@@ -422,12 +422,19 @@ footer ul li a {
     margin: 10px 0;
 }
 
+/* .price-range1{
+    border: 1px solid red;
+}
+
+.price-range2{
+    border: 5px solid green;
+} */
+
 .price-range-display {
     display: flex;
     justify-content: space-between;
 }
 
-/* Общий стиль для сетки товаров */
 .product-grid {
     display: grid;
     overflow: auto;
@@ -439,7 +446,24 @@ footer ul li a {
     padding: 20px;
 }
 
-/* Карточка товара */
+.product-grid::-webkit-scrollbar{
+    width: 8px;
+}
+
+.product-grid::-webkit-scrollbar-thumb{
+    background: rgba(82, 82, 122, 0.2);
+    border-radius: 8px;
+    transition-duration: 250ms;
+}
+
+.product-grid::-webkit-scrollbar-track{
+    display: none;
+}
+
+.product-grid::-webkit-scrollbar-thumb:hover{
+    background: rgba(82, 82, 122, 0.5);
+}
+
 .product-card {
     min-height: 420px;
     background-color: #fff;

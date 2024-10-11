@@ -84,6 +84,9 @@
                 {% elif product|instanceof:"FitnessProduct" %}
                     <li><strong>Категория:</strong> {{ product.category }}</li>
                     <li><strong>Материал:</strong> {{ product.material }}</li>
+                {% elif product|instanceof:"MartialArtsProduct" %}
+                    <li><strong>Тип снаряжения:</strong> {{ product.get_category_display }}</li>
+                    <li><strong>Материал:</strong> {{ product.material }}</li>
                 
                 {% else %}
                     <li>Нет дополнительных характеристик для этого товара.</li>

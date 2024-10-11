@@ -421,7 +421,6 @@ def racks(request):
     max_price = request.GET.get('max_price', 25990)
     weight = request.GET.get('weight')
     adjustable = request.GET.get('adjustable')
-    print(adjustable)
 
     selected_adjustability = ADJUSTABLE_MAP.get(adjustable)
 
@@ -446,7 +445,6 @@ def racks(request):
     else:
         racks = racks.order_by('-popularity')
 
-    print(adjustable)
     context = {
         'racks_sort': racks,
         'sort_by': sort_by,

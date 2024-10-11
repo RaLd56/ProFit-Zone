@@ -104,8 +104,16 @@ footer ul li a {
 }
 
 .footer-column {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
     width: 30%;
 }
+
+.footer-column ul{
+    padding: 0;
+}
+
 .promo-banners {
     width: 100%;
     margin: 20px 0;
@@ -334,9 +342,19 @@ footer ul li a {
 
 .catalogue-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: 1fr 1fr;
     gap: 20px;
     justify-items: center;
+}
+
+.catalogue-grid a{
+    display: flex;
+    min-width: 100%;
+}
+
+.catalogue-grid a div{
+    min-width: 100%;
 }
 
 .catalogue-item {
@@ -404,21 +422,50 @@ footer ul li a {
     margin: 10px 0;
 }
 
+/* .price-range1{
+    border: 1px solid red;
+}
+
+.price-range2{
+    border: 5px solid green;
+} */
+
 .price-range-display {
     display: flex;
     justify-content: space-between;
 }
 
-/* Общий стиль для сетки товаров */
 .product-grid {
     display: grid;
+    overflow: auto;
+    max-height: 70vh;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    z-index: 10;
     gap: 20px;
     padding: 20px;
 }
 
-/* Карточка товара */
+.product-grid::-webkit-scrollbar{
+    width: 8px;
+}
+
+.product-grid::-webkit-scrollbar-thumb{
+    background: rgba(82, 82, 122, 0.2);
+    border-radius: 8px;
+    transition-duration: 250ms;
+}
+
+.product-grid::-webkit-scrollbar-track{
+    display: none;
+}
+
+.product-grid::-webkit-scrollbar-thumb:hover{
+    background: rgba(82, 82, 122, 0.5);
+}
+
 .product-card {
+    min-height: 420px;
     background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
